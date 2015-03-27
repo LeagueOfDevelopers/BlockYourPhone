@@ -30,6 +30,8 @@ public class Vk extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vk_auth);
 
+        String test = "";
+
         setupVkUI();
        // showButtons();
     }
