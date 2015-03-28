@@ -14,7 +14,7 @@ public class MainActivity extends Activity {
 
     Intent app_intent;
     Account account = new Account();
-    Api api;
+    static Api api;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,12 +33,10 @@ public class MainActivity extends Activity {
         if(account.access_token!=null)
             api=new Api(account.access_token, Constants.API_ID);
 
-        app_intent = new Intent();
-
         if(api == null)
-            app_intent.setClass(this, Vk.class);
+            app_intent = new Intent(this, Vk.class);
         else
-            app_intent.setClass(this, App.class);
+            app_intent = new Intent(this, App.class);
 
         startActivity(app_intent);
     }

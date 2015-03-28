@@ -14,15 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.perm.kate.api.Api;
+import android.widget.TextView;
 
 /**
- * Created by Жамбыл on 26.03.2015.
+ * Created by Жамбыл on 27.03.2015.
  */
-public class App  extends ActionBarActivity {
+public class Top  extends ActionBarActivity {
 
     //First We Declare Titles And Icons For Our Navigation Drawer List View
     //This Icons And Titles Are holded in an Array as you can see
@@ -52,7 +49,7 @@ public class App  extends ActionBarActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_app);
+        setContentView(R.layout.top);
 
     /* Assinging the toolbar object ot the view
     and setting the the Action bar to our toolbar
@@ -67,13 +64,13 @@ public class App  extends ActionBarActivity {
 
         mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
 
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
         // And passing the titles,icons,header view name, header view email,
         // and header view profile picture
 
         mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
 
-        final GestureDetector mGestureDetector = new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
+        final GestureDetector mGestureDetector = new GestureDetector(Top.this, new GestureDetector.SimpleOnGestureListener() {
 
             @Override public boolean onSingleTapUp(MotionEvent e) {
                 return true;
@@ -93,19 +90,19 @@ public class App  extends ActionBarActivity {
                     switch(recyclerView.getChildPosition(child))
                     {
                         case 1:
+                            intent = new Intent(Top.this, App.class);
+                            startActivity(intent);
                             break;
                         case 2:
-                            intent = new Intent(App.this, Top.class);
-                            startActivity(intent);
                             break;
                         case 3:
                             MainActivity.api = null;
                             Vk.api = null;
                             Vk.account.access_token=null;
                             Vk.account.user_id=0;
-                            Vk.account.save(App.this);
+                            Vk.account.save(Top.this);
 
-                            intent = new Intent(App.this, MainActivity.class);
+                            intent = new Intent(Top.this, MainActivity.class);
                             startActivity(intent);
                             break;
 
@@ -130,7 +127,7 @@ public class App  extends ActionBarActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
 
 
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);        // Drawer object Assigned to the view
         mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
 
             @Override
@@ -145,8 +142,6 @@ public class App  extends ActionBarActivity {
                 super.onDrawerClosed(drawerView);
                 // Code here will execute once drawer is closed
             }
-
-
 
         }; // Drawer Toggle Object Made
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
