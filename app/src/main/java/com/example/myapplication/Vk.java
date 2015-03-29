@@ -86,6 +86,7 @@ public class Vk extends Activity {
                 app_intent = new Intent();
                 app_intent.setClass(this, App.class);
                 startActivity(app_intent);
+                finish();
 
             }
         }

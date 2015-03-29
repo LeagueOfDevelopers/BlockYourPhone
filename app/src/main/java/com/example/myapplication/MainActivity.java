@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.vk_auth);
+        //setContentView(R.layout.main_app); //TODO разобраться с выходом
 
         StartApp();
 
@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
             app_intent = new Intent(this, App.class);
 
         startActivity(app_intent);
+        finish();
     }
 
 }
