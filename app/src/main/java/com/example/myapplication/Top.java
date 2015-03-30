@@ -22,61 +22,33 @@ import android.widget.TextView;
  */
 public class Top  extends ActionBarActivity {
 
-    //First We Declare Titles And Icons For Our Navigation Drawer List View
-    //This Icons And Titles Are holded in an Array as you can see
-
     String TITLES[] = {"Главная","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_event,R.drawable.ic_event};
-
-    //Similarly we Create a String Resource for the name and email in the header view
-    //And we also create a int resource for profile picture in the header view
 
     String NAME = "Zhambul Ermagambet";
     String EMAIL = "zhambul-96@mail.ru";
     int PROFILE = R.drawable.zhambul;
 
-    private Toolbar toolbar;                              // Declaring the Toolbar Object
+    private Toolbar toolbar;
 
-    RecyclerView mRecyclerView;                           // Declaring RecyclerView
-    RecyclerView.Adapter mAdapter;                        // Declaring Adapter For Recycler View
-    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
-    DrawerLayout Drawer;                                  // Declaring DrawerLayout
+    RecyclerView mRecyclerView;
+    RecyclerView.Adapter mAdapter;
+    RecyclerView.LayoutManager mLayoutManager;
+    DrawerLayout Drawer;
     int Numboftabs =2;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"Все","Друзья"};
+    CharSequence Titles[]={"Друзья","Все"};
 
-    ActionBarDrawerToggle mDrawerToggle;                  // Declaring Action Bar Drawer Toggle
-
-
-
+    ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top);
 
-     /* Assinging the toolbar object ot the view
-        and setting the the Action bar to our toolbar
-     */
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);   //setSupportActionBar(toolbar);
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
-        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
-        // And passing the titles,icons,header view name, header view email,
-        // and header view profile picture
-
-        //TABS111
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
-        pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(adapter);
-
-        // Assiging the Sliding Tab Layout View
-        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
-
+        startUI();
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -86,12 +58,9 @@ public class Top  extends ActionBarActivity {
         });
 
         // Setting the ViewPager For the SlidingTabsLayout
-        tabs.setViewPager(pager);
 
-        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
-
-        final GestureDetector mGestureDetector = new GestureDetector(Top.this, new GestureDetector.SimpleOnGestureListener() {
-
+        final GestureDetector mGestureDetector = new GestureDetector
+          (Top.this, new GestureDetector.SimpleOnGestureListener() {
             @Override public boolean onSingleTapUp(MotionEvent e) {
                 return true;
             }
@@ -125,11 +94,8 @@ public class Top  extends ActionBarActivity {
                             intent = new Intent(Top.this, MainActivity.class);
                             startActivity(intent);
                             break;
-
                     }
-
                     //Toast.makeText(App.this, "The Item Clicked is: " + recyclerView.getChildPosition(child), Toast.LENGTH_SHORT).show();
-
                     return true;
                 }
                 return false;
@@ -142,9 +108,6 @@ public class Top  extends ActionBarActivity {
         });
 
 
-        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
-        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);        // Drawer object Assigned to the view
         mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
 
             @Override
@@ -165,9 +128,38 @@ public class Top  extends ActionBarActivity {
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
     }
+    private void startUI()
+    {
+        /* Assinging the toolbar object ot the view
+        and setting the the Action bar to our toolbar
+     */
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);   //setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Рейтинг");
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
+        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        // And passing the titles,icons,header view name, header view email,
+        // and header view profile picture
 
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(adapter);
 
+        // Assiging the Sliding Tab Layout View
+        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+        tabs.setViewPager(pager);
+
+        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
+        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
+        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);        // Drawer object Assigned to the view
+    }
+
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -188,5 +180,5 @@ public class Top  extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }

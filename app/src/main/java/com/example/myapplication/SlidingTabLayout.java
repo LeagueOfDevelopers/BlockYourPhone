@@ -57,7 +57,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * {@link #setCustomTabColorizer(TabColorizer)}.
      */
     public interface TabColorizer {
-
         /**
          * @return return the color of the indicator used when {@code position} is selected.
          */
@@ -70,7 +69,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
     private static final int TAB_VIEW_TEXT_SIZE_SP = 12;
 
     private int mTitleOffset;
-
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
     private boolean mDistributeEvenly;
@@ -227,7 +225,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 tabView.setSelected(true);
             }
             tabTitleView.setTextColor(getResources().getColorStateList(R.color.selector));
-            tabTitleView.setTextSize(14);
+            tabTitleView.setTextSize(11);
         }
     }
 

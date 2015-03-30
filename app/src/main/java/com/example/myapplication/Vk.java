@@ -17,9 +17,9 @@ public class Vk extends Activity {
     private final int REQUEST_LOGIN=1;
 
     Button authorizeButton;
-    Button logoutButton;
-    Button postButton;
-    EditText messageEditText;
+    //Button logoutButton;
+    //Button postButton;
+    //EditText messageEditText;
     Intent app_intent;
 
     public static Account account=new Account();
@@ -117,13 +117,6 @@ public class Vk extends Activity {
         }
     };
 /*
-    private void logOut() {
-        api=null;
-        account.access_token=null;
-        account.user_id=0;
-        account.save(Vk.this);
-        showButtons();
-    }
 
     void showButtons(){
         if(api!=null){

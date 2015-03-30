@@ -14,22 +14,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <include
             android:id="@+id/tool_bar"
             layout="@layout/tool_bar">
         </include>
+
         <TextView
+            android:layout_marginTop="200dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="App"
+            android:text="Основной функционал"
             android:id="@+id/textView3"
             android:layout_gravity="center_horizontal" />
 
 
     </LinearLayout>
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerView"
@@ -40,6 +40,7 @@
         android:scrollbars="vertical">
 
     </android.support.v7.widget.RecyclerView>
+
 
 
 </android.support.v4.widget.DrawerLayout>

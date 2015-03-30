@@ -24,9 +24,6 @@ import com.perm.kate.api.Api;
  */
 public class App  extends ActionBarActivity {
 
-    //First We Declare Titles And Icons For Our Navigation Drawer List View
-    //This Icons And Titles Are holded in an Array as you can see
-
     String TITLES[] = {"Главная","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_event,R.drawable.ic_event};
 
@@ -37,42 +34,19 @@ public class App  extends ActionBarActivity {
     String EMAIL = "zhambul-96@mail.ru";
     int PROFILE = R.drawable.zhambul;
 
-    private Toolbar toolbar;                              // Declaring the Toolbar Object
+    private Toolbar toolbar;
+    RecyclerView mRecyclerView;
+    RecyclerView.Adapter mAdapter;
+    RecyclerView.LayoutManager mLayoutManager;
+    DrawerLayout Drawer;
 
-    RecyclerView mRecyclerView;                           // Declaring RecyclerView
-    RecyclerView.Adapter mAdapter;                        // Declaring Adapter For Recycler View
-    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
-    DrawerLayout Drawer;                                  // Declaring DrawerLayout
-
-    ActionBarDrawerToggle mDrawerToggle;                  // Declaring Action Bar Drawer Toggle
-
-
-
+    ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
-
-    /* Assinging the toolbar object ot the view
-    and setting the the Action bar to our toolbar
-     */
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        //setSupportActionBar(toolbar);
-
-
-
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
-
-        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
-
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
-        // And passing the titles,icons,header view name, header view email,
-        // and header view profile picture
-
-        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
-
+        startUI();
         final GestureDetector mGestureDetector = new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
 
             @Override public boolean onSingleTapUp(MotionEvent e) {
@@ -80,8 +54,6 @@ public class App  extends ActionBarActivity {
             }
 
         });
-
-
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
@@ -108,11 +80,7 @@ public class App  extends ActionBarActivity {
                             intent = new Intent(App.this, MainActivity.class);
                             startActivity(intent);
                             break;
-
                     }
-
-                    //Toast.makeText(App.this, "The Item Clicked is: " + recyclerView.getChildPosition(child), Toast.LENGTH_SHORT).show();
-
                     return true;
                 }
                 return false;
@@ -124,13 +92,6 @@ public class App  extends ActionBarActivity {
             }
         });
 
-
-        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
-
-        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
-
-
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
         mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
 
             @Override
@@ -149,12 +110,34 @@ public class App  extends ActionBarActivity {
 
 
         }; // Drawer Toggle Object Made
-        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
     }
+    private void startUI()
+    {
 
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Главная");
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
+
+        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        // And passing the titles,icons,header view name, header view email,
+        // and header view profile picture
+
+        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
+
+        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
+
+        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
+
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
+        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+    }
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -175,5 +158,5 @@ public class App  extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }
