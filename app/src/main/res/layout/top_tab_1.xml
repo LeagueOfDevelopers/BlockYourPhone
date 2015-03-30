@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Рейтинг друзей"
-        android:id="@+id/textView"
+        android:id="@+id/mytab1"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

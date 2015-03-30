@@ -1,7 +1,7 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -10,23 +10,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.perm.kate.api.Api;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by Жамбыл on 26.03.2015.
  */
 public class App  extends ActionBarActivity {
-
+    //Главная
     String TITLES[] = {"Главная","Рейтинг","Выход"};
-    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_event,R.drawable.ic_event};
-
+    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
+    TextView functional;
+   // Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
+    //Typeface type_medium = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
     //Similarly we Create a String Resource for the name and email in the header view
     //And we also create a int resource for profile picture in the header view
 
@@ -39,6 +37,7 @@ public class App  extends ActionBarActivity {
     RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
     DrawerLayout Drawer;
+    LinearLayout layoutFromRecycler;
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -47,7 +46,11 @@ public class App  extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
         startUI();
-        final GestureDetector mGestureDetector = new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
+        //Color color = getApplicationContext().getResources().getColor(R.color.ColorPrimary);
+        //if(MyAdapter.ViewHolder.getPosition() == 1){}
+
+        final GestureDetector mGestureDetector =
+                new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
 
             @Override public boolean onSingleTapUp(MotionEvent e) {
                 return true;
@@ -79,6 +82,7 @@ public class App  extends ActionBarActivity {
 
                             intent = new Intent(App.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                             break;
                     }
                     return true;
@@ -113,6 +117,7 @@ public class App  extends ActionBarActivity {
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
     }
+
     private void startUI()
     {
 
@@ -121,7 +126,6 @@ public class App  extends ActionBarActivity {
         getSupportActionBar().setTitle("Главная");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
-
         mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
 
         mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
@@ -136,6 +140,11 @@ public class App  extends ActionBarActivity {
 
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
+
+        functional = (TextView)findViewById(R.id.functional);
+        Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
+        functional.setTypeface(type_thin);
     }
 /*
     @Override

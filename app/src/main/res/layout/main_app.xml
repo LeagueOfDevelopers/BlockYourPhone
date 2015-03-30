@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Основной функционал"
-            android:id="@+id/textView3"
+            android:id="@+id/functional"
             android:layout_gravity="center_horizontal" />
 
 

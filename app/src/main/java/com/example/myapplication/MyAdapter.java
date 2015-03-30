@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +29,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     Context context;
 
 
-
     // Creating a ViewHolder which extends the RecyclerView View Holder
     // ViewHolder are used to to store the inflated views in order to recycle them
 
@@ -43,7 +44,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 
 
-
         public ViewHolder(View itemView,int ViewType,Context c) {                 // Creating ViewHolder Constructor with View and viewType As a parameter
             super(itemView);
             context_2 = c;
@@ -56,8 +56,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 textView = (TextView) itemView.findViewById(R.id.rowText); // Creating TextView object with the id of textView from item_row.xml
                 imageView = (ImageView) itemView.findViewById(R.id.rowIcon);// Creating ImageView object with the id of ImageView from item_row.xml
                 Holder_id = 1;                                               // setting holder id as 1 as the object being populated are of type item row
+
             }
-            else{
+            if(ViewType == TYPE_HEADER) {
                 Name = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
                 email = (TextView) itemView.findViewById(R.id.email);       // Creating Text View object from header.xml for email
                 profile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for profile pic
@@ -116,6 +117,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row,parent,false); //Inflating the layout\
 
             ViewHolder vhItem = new ViewHolder(v,viewType,context); //Creating ViewHolder and passing the object of type view
+
             return vhItem; // Returning the created object
             //inflate your layout and pass it to view holder
 
@@ -126,8 +128,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             ViewHolder vhHeader = new ViewHolder(v,viewType,context); //Creating ViewHolder and passing the object of type view
 
             return vhHeader; //returning the object created
-
-
         }
         return null;
 
@@ -138,10 +138,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     // which view type is being created 1 for item row
     @Override
     public void onBindViewHolder(MyAdapter.ViewHolder holder, int position) {
-        if(holder.Holder_id ==1) {                              // as the list view is going to be called after the header view so we decrement the
+        if(holder.Holder_id ==1) {
+            // as the list view is going to be called after the header view so we decrement the
             // position by 1 and pass it to the holder while setting the text and image
+            if(context.getClass().getSimpleName().equals("App")) {
+                if(holder.getPosition() == 1){
+                    holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                }
+           }
+            else if(context.getClass().getSimpleName().equals("Top")) {
+                if(holder.getPosition() == 2){
+                    holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                }
+            }
+            //App asd = new App();
             holder.textView.setText(mNavTitles[position - 1]); // Setting the Text with the array of our Titles
-            holder.imageView.setImageResource(mIcons[position -1]);// Setting the image with array of our icons
+            Typeface type_medium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+            //holder.textView.setTypeface(type_medium);
+            holder.imageView.setImageResource(mIcons[position - 1]);// Setting the image with array of our icons
+
         }
         else{
             holder.profile.setImageResource(profile);           // Similarly we set the resources for header view
@@ -154,6 +169,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mNavTitles.length+1;                               // the number of items in the list will be +1 the titles including the header view.
     }
+
 
 
     // With the following method we check what type of view is being passed

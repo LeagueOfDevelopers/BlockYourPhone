@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFromRecycler"
     android:layout_width="210dp"
     android:paddingTop="15dp"
     android:paddingBottom="8dp"

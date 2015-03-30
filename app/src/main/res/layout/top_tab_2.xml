@@ -8,8 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Рейтинг все"
-        android:id="@+id/textView"
+        android:text="Рейтинг всех"
+        android:id="@+id/mytab2"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

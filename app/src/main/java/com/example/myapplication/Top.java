@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -21,9 +22,9 @@ import android.widget.TextView;
  * Created by Жамбыл on 27.03.2015.
  */
 public class Top  extends ActionBarActivity {
-
+    //Рейтинг
     String TITLES[] = {"Главная","Рейтинг","Выход"};
-    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_event,R.drawable.ic_event};
+    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
     String NAME = "Zhambul Ermagambet";
     String EMAIL = "zhambul-96@mail.ru";
@@ -79,8 +80,9 @@ public class Top  extends ActionBarActivity {
                     switch(recyclerView.getChildPosition(child))
                     {
                         case 1:
-                            intent = new Intent(Top.this, App.class);
-                            startActivity(intent);
+                            //intent = new Intent(Top.this, App.class);
+                            //startActivity(intent);
+                            finish();
                             break;
                         case 2:
                             break;
@@ -93,6 +95,7 @@ public class Top  extends ActionBarActivity {
 
                             intent = new Intent(Top.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                             break;
                     }
                     //Toast.makeText(App.this, "The Item Clicked is: " + recyclerView.getChildPosition(child), Toast.LENGTH_SHORT).show();
@@ -157,6 +160,7 @@ public class Top  extends ActionBarActivity {
         mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
         mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);        // Drawer object Assigned to the view
+
     }
 
 /*
