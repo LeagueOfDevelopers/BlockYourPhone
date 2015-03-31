@@ -23,6 +23,7 @@ public class App  extends ActionBarActivity {
     String TITLES[] = {"Главная","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
     TextView functional;
+   // LinearLayout layoutFromRecycler;
    // Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
     //Typeface type_medium = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
     //Similarly we Create a String Resource for the name and email in the header view
@@ -128,7 +129,7 @@ public class App  extends ActionBarActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
         mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
 
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this,layoutFromRecycler);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
         // And passing the titles,icons,header view name, header view email,
         // and header view profile picture
 
@@ -140,6 +141,7 @@ public class App  extends ActionBarActivity {
 
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+
         layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
 
         functional = (TextView)findViewById(R.id.functional);

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutFromRecycler"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:background="#ffffff"
+    android:orientation="horizontal"
+    android:clickable="true"
+    android:weightSum="1">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="108dp"
+        android:layout_height="150dp">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_height="70dp"
+            android:src="@drawable/zhambul"
+            android:layout_marginLeft="16dp"
+
+            android:id="@+id/vk_photo"
+            />
+        </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Имя"
+            android:id="@+id/vk_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Место в рейтинге"
+            android:id="@+id/vk_raiting" />
+    </LinearLayout>
+</LinearLayout>

@@ -2,22 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/vk"
+    android:weightSum="1">
 
     <Button
+        android:layout_marginTop="300dp"
         android:id="@+id/authorize"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Авторизация"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal" />
+        android:text="Авторизация через Вконтакте"
+        android:layout_weight="0.09" />
 
 
 </LinearLayout>

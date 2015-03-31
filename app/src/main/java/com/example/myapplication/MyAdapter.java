@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -27,7 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private int profile;        //int Resource for header view profile picture
     private String email;       //String Resource for header view email
     Context context;
-
+    LinearLayout layoutFromRecycler;
 
     // Creating a ViewHolder which extends the RecyclerView View Holder
     // ViewHolder are used to to store the inflated views in order to recycle them
@@ -41,6 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView Name;
         TextView email;
         Context context_2;
+        LinearLayout layoutFromRecycler1;
 
 
 
@@ -96,7 +98,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 */
 
     }
-    MyAdapter(String Titles[],int Icons[],String Name,String Email, int Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
+    MyAdapter(String Titles[],int Icons[],String Name,String Email, int Profile,Context passedContext, LinearLayout ll){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
         mNavTitles = Titles;                //have seen earlier
         mIcons = Icons;
@@ -104,6 +106,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         email = Email;
         profile = Profile;                     //here we assign those passed values to the values we declared here
         this.context = passedContext;
+        layoutFromRecycler = ll;
         //in adapter
     }
     //Below first we override the method onCreateViewHolder which is called when the ViewHolder is
@@ -144,11 +147,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             if(context.getClass().getSimpleName().equals("App")) {
                 if(holder.getPosition() == 1){
                     holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                    holder.layoutFromRecycler1 = (LinearLayout)holder.textView.getRootView();
+                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.Grey));
                 }
            }
             else if(context.getClass().getSimpleName().equals("Top")) {
                 if(holder.getPosition() == 2){
                     holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                    holder.layoutFromRecycler1 = (LinearLayout)holder.textView.getRootView();
+                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.Grey));
                 }
             }
             //App asd = new App();

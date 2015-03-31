@@ -16,7 +16,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.Attributes;
+
+import javax.xml.namespace.NamespaceContext;
 
 /**
  * Created by Жамбыл on 27.03.2015.
@@ -26,6 +34,7 @@ public class Top  extends ActionBarActivity {
     String TITLES[] = {"Главная","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
+    //Для хедера
     String NAME = "Zhambul Ermagambet";
     String EMAIL = "zhambul-96@mail.ru";
     int PROFILE = R.drawable.zhambul;
@@ -36,11 +45,12 @@ public class Top  extends ActionBarActivity {
     RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
     DrawerLayout Drawer;
-    int Numboftabs =2;
+    int Numboftabs = 2;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
     CharSequence Titles[]={"Друзья","Все"};
+    LinearLayout layoutFromRecycler;
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -50,6 +60,8 @@ public class Top  extends ActionBarActivity {
         setContentView(R.layout.top);
 
         startUI();
+
+
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -138,11 +150,10 @@ public class Top  extends ActionBarActivity {
      */
         toolbar = (Toolbar) findViewById(R.id.tool_bar);   //setSupportActionBar(toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Рейтинг");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
         mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this,layoutFromRecycler);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
         // And passing the titles,icons,header view name, header view email,
         // and header view profile picture
 
@@ -160,8 +171,9 @@ public class Top  extends ActionBarActivity {
         mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
         mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);        // Drawer object Assigned to the view
-
+        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
     }
+
 
 /*
     @Override

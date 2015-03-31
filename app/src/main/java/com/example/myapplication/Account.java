@@ -5,9 +5,14 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
+import java.util.List;
+
 public class Account {
     public String access_token;
     public long user_id;
+
+    public int getPositionInTop;
+    public String Name;
 
     public void save(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
