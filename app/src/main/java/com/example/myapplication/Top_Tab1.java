@@ -27,10 +27,13 @@ import java.util.Map;
 public class Top_Tab1 extends Fragment {
     ListView VkRowListView1;
     Button PostToWallButton;
+    TextView NoFriendsText;
+    Typeface type_thin;
     //Данные для вк_адаптера
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
+
 
     List<String> Names =  new ArrayList<String>();
 
@@ -42,6 +45,7 @@ public class Top_Tab1 extends Fragment {
             ATTRIBUTE_NAME_IMAGE };
     // массив ID View-компонентов, в которые будут вставлять данные
     int[] to = { R.id.vk_name, R.id.vk_raiting, R.id.vk_photo };
+    SimpleAdapter sAdapter1;
 
     //Дата, куда пакуем
         ArrayList<Map<String, Object>> data;
@@ -53,21 +57,22 @@ public class Top_Tab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.top_tab_1,container,false);
-        //Typeface type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
+        type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
         //TextView mytab1 = (TextView)v.findViewById(R.id.mytab1);
         //mytab1.setTypeface(type_thin);
         StartUI(v);
-        Names.add("Жамбыл");
+        //Names.add("Жамбыл");
 
         //проверяем на наличие друзей
         if(Names != null & !Names.isEmpty()){
-            data  = new ArrayList<Map<String, Object>>(
-                    Names.size());
+            data  = new ArrayList<Map<String, Object>>(Names.size());
+            //пакуем и отправляем
             PackAndSendData(v);
         }
-        else
+        else {
             PostToWallButton.setVisibility(View.VISIBLE);
-
+            NoFriendsText.setVisibility(View.VISIBLE);
+        }
         return v;
     }
 
@@ -82,11 +87,9 @@ public class Top_Tab1 extends Fragment {
             data.add(m);
 
             // создаем адаптер
-            SimpleAdapter sAdapter1 = new SimpleAdapter(getActivity(), data, R.layout.vk_row,
-                    from, to);
+            sAdapter1 = new SimpleAdapter(getActivity(), data, R.layout.vk_row,from, to);
             //привязываем и сетим
-            VkRowListView1 = (ListView) v.findViewById(R.id.VkRowListView1);
-            VkRowListView1.setAdapter(sAdapter1);
+
         }
     }
     private void StartUI(View v)
@@ -94,13 +97,23 @@ public class Top_Tab1 extends Fragment {
         PostToWallButton = (Button)v.findViewById(R.id.PostToWallButton);
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
+
+        NoFriendsText = (TextView)v.findViewById(R.id.NoFriendsText);
+        NoFriendsText.setVisibility(View.GONE);
+        NoFriendsText.setTypeface(type_thin);
+
+        VkRowListView1 = (ListView) v.findViewById(R.id.VkRowListView1);
+        VkRowListView1.setAdapter(sAdapter1);
+
     }
     private View.OnClickListener onWallButtonClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View view) {
             vk.WallText("testasdas", getActivity());
+            PostToWallButton.setVisibility(View.GONE);
         }
     };
+
 
 }

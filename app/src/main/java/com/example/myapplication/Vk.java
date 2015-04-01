@@ -14,15 +14,16 @@ import com.perm.kate.api.Api;
 /**
  * Created by Жамбыл on 26.03.2015.
  */
+
 public class Vk extends Activity {
     private final int REQUEST_LOGIN=1;
 
     Button authorizeButton;
     Intent app_intent;
 
-    public static Account account=new Account();
     public static Api api;
     String WallText;
+    Context c;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class Vk extends Activity {
             startLoginActivity();
         }
     };
+
 /*
     private View.OnClickListener postClick=new View.OnClickListener(){
         @Override
@@ -62,36 +64,37 @@ public class Vk extends Activity {
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
                 //авторизовались успешно
-                account.access_token=data.getStringExtra("token");
-                account.user_id=data.getLongExtra("user_id", 0);
-                account.save(Vk.this);
-                api=new Api(account.access_token, Constants.API_ID);
-                app_intent = new Intent();
-                app_intent.setClass(this, App.class);
+                Account.access_token = data.getStringExtra("token");
+                Account.user_id = data.getLongExtra("user_id", 0);
+                Account.save(Vk.this);
+               // api=new Api(Account.access_token, Constants.API_ID);
+                app_intent = new Intent(this, App.class);
                 startActivity(app_intent);
+                //api = null;
                 finish();
             }
         }
     }
-   public void WallText(String _text, Context c)
+   public void WallText(String _text, Context _c)
    {
-        WallText = _text;
-       /*Top_Tab1 asd = new Top_Tab1();
-       asd.setText("asdsasadsd");*/
-       //Toast.makeText(c, "sadsadsda", Toast.LENGTH_LONG).show();
-        postToWall();
+       WallText = _text;
+       c = _c;
+       if(Account.user_id == 0)
+           Account.restore(c);
+       postToWall();
    }
-   private void postToWall() {
+   private void postToWall(){
         //Общение с сервером в отдельном потоке чтобы не блокировать UI поток
         new Thread(){
             @Override
             public void run(){
                 try {
                     String text = WallText;
-                    api = new Api(account.access_token, Constants.API_ID);
-                    api.createWallPost(account.user_id, text, null, null, false, false, false, null, null, null, 0L, null, null);
+                    api=new Api(Account.access_token, Constants.API_ID);
+                    api.createWallPost(Account.user_id, text, null, null, false, false, false, null, null, null, 0L, null, null);
+                    api = null;
                     //Показать сообщение в UI потоке
-                    // api.getFriends();
+                    //api.getFriends();
 
                     runOnUiThread(successRunnable);
                 } catch (Exception e) {
@@ -104,7 +107,7 @@ public class Vk extends Activity {
     Runnable successRunnable = new Runnable(){
         @Override
         public void run() {
-            Toast.makeText(getApplicationContext(), "Запись успешно добавлена", Toast.LENGTH_LONG).show();
+            Toast.makeText(c, "Запись успешно добавлена", Toast.LENGTH_LONG).show();
         }
     };
 

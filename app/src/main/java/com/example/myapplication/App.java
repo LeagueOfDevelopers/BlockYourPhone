@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,11 +11,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.GestureDetector;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Жамбыл on 26.03.2015.
@@ -39,7 +44,7 @@ public class App  extends ActionBarActivity {
     RecyclerView.LayoutManager mLayoutManager;
     DrawerLayout Drawer;
     LinearLayout layoutFromRecycler;
-
+   // Account account = new Account();
     ActionBarDrawerToggle mDrawerToggle;
 
     @Override
@@ -47,9 +52,9 @@ public class App  extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
         startUI();
-        //Color color = getApplicationContext().getResources().getColor(R.color.ColorPrimary);
-        //if(MyAdapter.ViewHolder.getPosition() == 1){}
-
+        if(Account.user_id == 0)
+            Account.restore(this);
+        //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
         final GestureDetector mGestureDetector =
                 new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
 
@@ -77,9 +82,9 @@ public class App  extends ActionBarActivity {
                         case 3:
                             MainActivity.api = null;
                             Vk.api = null;
-                            Vk.account.access_token=null;
-                            Vk.account.user_id=0;
-                            Vk.account.save(App.this);
+                            Account.access_token=null;
+                            Account.user_id=0;
+                            Account.save(App.this);
 
                             intent = new Intent(App.this, MainActivity.class);
                             startActivity(intent);
@@ -102,20 +107,17 @@ public class App  extends ActionBarActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
-                // open I am not going to put anything here)
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
             }
 
 
 
-        }; // Drawer Toggle Object Made
-        mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
+        };
+        mDrawerToggle.syncState();
 
     }
 
@@ -126,21 +128,19 @@ public class App  extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Главная");
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
-        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);
 
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this,layoutFromRecycler);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
-        // And passing the titles,icons,header view name, header view email,
-        // and header view profile picture
 
-        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
+        mRecyclerView.setAdapter(mAdapter);
 
-        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
+        mLayoutManager = new LinearLayoutManager(this);
 
-        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);        // Drawer object Assigned to the view
-        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);
+        Drawer.setDrawerListener(mDrawerToggle);
 
         layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
 
@@ -148,8 +148,27 @@ public class App  extends ActionBarActivity {
         Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
         functional.setTypeface(type_thin);
     }
-/*
     @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Выход")
+                .setMessage("Вы уверены, что хотите выйти?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes,
+                        new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                App.super.onBackPressed();
+                                finish();
+                            }
+                        }).create().show();
+    }
+
+    /*  @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);

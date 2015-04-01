@@ -13,7 +13,6 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
     Intent app_intent;
-    Account account = new Account();
     static Api api;
 
     @Override
@@ -27,17 +26,14 @@ public class MainActivity extends Activity {
     void StartApp()
     {
         //Восстановление сохранённой сессии вк
-        account.restore(this);
+        Account.restore(this);
 
-        //Если сессия есть создаём API для обращения к серверу
-        if(account.access_token!=null)
-            api=new Api(account.access_token, Constants.API_ID);
+        api =new Api(Account.access_token, Constants.API_ID);
 
-        if(api == null)
+        if(Account.access_token == null)
             app_intent = new Intent(this, Vk.class);
         else
             app_intent = new Intent(this, App.class);
-
         startActivity(app_intent);
         finish();
     }

@@ -98,7 +98,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 */
 
     }
-    MyAdapter(String Titles[],int Icons[],String Name,String Email, int Profile,Context passedContext, LinearLayout ll){ // MyAdapter Constructor with titles and icons parameter
+    MyAdapter(String Titles[],int Icons[],String Name,String Email, int Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
         mNavTitles = Titles;                //have seen earlier
         mIcons = Icons;
@@ -106,7 +106,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         email = Email;
         profile = Profile;                     //here we assign those passed values to the values we declared here
         this.context = passedContext;
-        layoutFromRecycler = ll;
         //in adapter
     }
     //Below first we override the method onCreateViewHolder which is called when the ViewHolder is
