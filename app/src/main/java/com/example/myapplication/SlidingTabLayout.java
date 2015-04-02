@@ -18,6 +18,7 @@ package com.example.myapplication;
 
 
         import android.content.Context;
+        import android.graphics.Color;
         import android.graphics.Typeface;
         import android.os.Build;
         import android.support.v4.view.PagerAdapter;
@@ -99,6 +100,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         mTabStrip = new SlidingTabStrip(context);
         addView(mTabStrip, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
     }
 
     /**

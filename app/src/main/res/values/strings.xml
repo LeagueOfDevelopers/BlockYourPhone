@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">Block Phone</string>
+    <string name="app_name">BlockPhone</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="openDrawer">Open Drawer</string>
     <string name="closeDrawer">Close Drawer</string>
+    <string name="WallText_noFriends">BlockPhone_WallPost_Test</string>
 </resources>

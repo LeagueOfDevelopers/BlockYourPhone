@@ -1,5 +1,8 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -37,7 +40,7 @@ public class Top_Tab1 extends Fragment {
 
     List<String> Names =  new ArrayList<String>();
 
-    String[] Places = {"1","2","3","4","5","6","7"};
+    String[] Places = {"6420","5840","4480","3200","2100","1980","1500"};
     int img = R.drawable.zhambul;
 
     // массив имен атрибутов, из которых будут читаться данные
@@ -57,11 +60,10 @@ public class Top_Tab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.top_tab_1,container,false);
-        type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
-        //TextView mytab1 = (TextView)v.findViewById(R.id.mytab1);
-        //mytab1.setTypeface(type_thin);
+
         StartUI(v);
         //Names.add("Жамбыл");
+        //TODO: проверка установил ли друг приложения
 
         //проверяем на наличие друзей
         if(Names != null & !Names.isEmpty()){
@@ -88,15 +90,16 @@ public class Top_Tab1 extends Fragment {
 
             // создаем адаптер
             sAdapter1 = new SimpleAdapter(getActivity(), data, R.layout.vk_row,from, to);
-            //привязываем и сетим
-
         }
     }
     private void StartUI(View v)
     {
+        type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
+
         PostToWallButton = (Button)v.findViewById(R.id.PostToWallButton);
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
+        PostToWallButton.setTypeface(type_thin);
 
         NoFriendsText = (TextView)v.findViewById(R.id.NoFriendsText);
         NoFriendsText.setVisibility(View.GONE);
@@ -105,13 +108,23 @@ public class Top_Tab1 extends Fragment {
         VkRowListView1 = (ListView) v.findViewById(R.id.VkRowListView1);
         VkRowListView1.setAdapter(sAdapter1);
 
+
     }
     private View.OnClickListener onWallButtonClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View view) {
-            vk.WallText("testasdas", getActivity());
-            PostToWallButton.setVisibility(View.GONE);
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Поделиться")
+                    .setMessage("Добавить запись на стену Вконтакте?")
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton("Да",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    vk.WallText(getResources().getString(R.string.WallText_noFriends), getActivity());
+                                    getActivity().onBackPressed();
+                                }
+                            }).create().show();
         }
     };
 

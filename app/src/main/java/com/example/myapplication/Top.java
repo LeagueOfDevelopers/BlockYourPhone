@@ -35,8 +35,8 @@ public class Top  extends ActionBarActivity {
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
     //Для хедера
-    String NAME = "Zhambul Ermagambet";
-    String EMAIL = "zhambul-96@mail.ru";
+    String NAME = Account.getName();
+    int POINTS = Account.getPoints();
     int PROFILE = R.drawable.zhambul;
 
     private Toolbar toolbar;
@@ -66,7 +66,7 @@ public class Top  extends ActionBarActivity {
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.tabsScrollColor);
+                return getResources().getColor(R.color.Grey);
             }
         });
 
@@ -151,7 +151,7 @@ public class Top  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,Top.this);
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE,Top.this);
 
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         pager = (ViewPager) findViewById(R.id.pager);

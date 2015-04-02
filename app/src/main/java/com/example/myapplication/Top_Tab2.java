@@ -10,9 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.perm.kate.api.Api;
+import com.perm.kate.api.KException;
+import com.perm.kate.api.User;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,17 +27,20 @@ import java.util.Map;
  * Created by Жамбыл on 29.03.2015.
  */
 public class Top_Tab2 extends Fragment {
-
+    Typeface type_thin;
     ListView VkRowListView2;
     //Данные для вк_адаптера
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
-
+    Vk vk = new Vk();
     String[] Names = { "Жамбыл", "Хуйбыл", "Мамбыл",
             "Жуйбыл","Куйбыл", "Намбыл", "Трамбон" };
-    String[] Places = {"1","2","3","4","5","6","7"};
+    String[] Places = {"6420","5840","4480","3200","2100","1980","1500"};
+
     int img = R.drawable.zhambul;
+
+    ArrayList<User> Friends = new ArrayList<User>();
 
 
     // массив имен атрибутов, из которых будут читаться данные
@@ -47,15 +56,24 @@ public class Top_Tab2 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.top_tab_2,container,false);
-        //Typeface type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
-        //TextView mytab2 = (TextView)v.findViewById(R.id.mytab2);
-        //mytab2.setTypeface(type_thin);
+        View v = inflater.inflate(R.layout.top_tab_2,container,false);
+
+        StartUI(v);
+
+        Friends = vk.getFriends(Friends, getActivity());
+
+
+       // Toast.makeText(getActivity(), vk.users.get(0).first_name, Toast.LENGTH_LONG).show();
 
         //Пакуем и отправляем
         PackAndSendData(v);
 
         return v;
+    }
+    private void StartUI(View v)
+    {
+        type_thin= Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
+
     }
     private void PackAndSendData(View v)
     {

@@ -6,7 +6,8 @@
     android:id="@+id/DrawerLayoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="7dp">
+    android:elevation="7dp"
+    android:background="#ffffff">
 
 
     <LinearLayout

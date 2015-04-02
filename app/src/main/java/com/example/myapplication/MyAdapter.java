@@ -26,7 +26,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private String name;        //String Resource for header View Name
     private int profile;        //int Resource for header view profile picture
-    private String email;       //String Resource for header view email
+    private int points;       //String Resource for header view email
     Context context;
     LinearLayout layoutFromRecycler;
 
@@ -40,7 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         ImageView imageView;
         ImageView profile;
         TextView Name;
-        TextView email;
+        TextView points;
         Context context_2;
         LinearLayout layoutFromRecycler1;
 
@@ -62,7 +62,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
             if(ViewType == TYPE_HEADER) {
                 Name = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
-                email = (TextView) itemView.findViewById(R.id.email);       // Creating Text View object from header.xml for email
+                points = (TextView) itemView.findViewById(R.id.points);       // Creating Text View object from header.xml for email
                 profile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for profile pic
                 Holder_id = 0;                                                // Setting holder id = 0 as the object being populated are of type header view
             }
@@ -98,12 +98,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 */
 
     }
-    MyAdapter(String Titles[],int Icons[],String Name,String Email, int Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
+    MyAdapter(String Titles[],int Icons[],String Name,int _points, int Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
         mNavTitles = Titles;                //have seen earlier
         mIcons = Icons;
         name = Name;
-        email = Email;
+        points = _points;
         profile = Profile;                     //here we assign those passed values to the values we declared here
         this.context = passedContext;
         //in adapter
@@ -145,29 +145,39 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             // position by 1 and pass it to the holder while setting the text and image
             if(context.getClass().getSimpleName().equals("App")) {
                 if(holder.getPosition() == 1){
-                    holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                    holder.textView.setTextColor(Color.WHITE);
                     holder.layoutFromRecycler1 = (LinearLayout)holder.textView.getRootView();
-                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.Grey));
+                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.ColorPrimaryDark));
                 }
            }
             else if(context.getClass().getSimpleName().equals("Top")) {
                 if(holder.getPosition() == 2){
-                    holder.textView.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                    holder.textView.setTextColor(Color.WHITE);
                     holder.layoutFromRecycler1 = (LinearLayout)holder.textView.getRootView();
-                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.Grey));
+                    holder.layoutFromRecycler1.setBackgroundColor(context.getResources().getColor(R.color.ColorPrimaryDark));
                 }
             }
-            //App asd = new App();
             holder.textView.setText(mNavTitles[position - 1]); // Setting the Text with the array of our Titles
             Typeface type_medium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
             //holder.textView.setTypeface(type_medium);
             holder.imageView.setImageResource(mIcons[position - 1]);// Setting the image with array of our icons
+            if(context.getClass().getSimpleName().equals("App")) {
+                if(holder.getPosition() == 1){
+                    holder.imageView.setImageResource(R.drawable.ic_action1);
+                }
+            }
+            else if(context.getClass().getSimpleName().equals("Top")) {
+                if(holder.getPosition() == 2){
+                    holder.imageView.setImageResource(R.drawable.ic_raiting1);
+                }
+            }
 
         }
         else{
             holder.profile.setImageResource(profile);           // Similarly we set the resources for header view
             holder.Name.setText(name);
-            holder.email.setText(email);
+            holder.points.setText(points + " очков");
+            holder.points.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"));
         }
     }
     // This method returns the number of items present in the list

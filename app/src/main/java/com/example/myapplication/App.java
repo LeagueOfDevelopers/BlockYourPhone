@@ -34,8 +34,8 @@ public class App  extends ActionBarActivity {
     //Similarly we Create a String Resource for the name and email in the header view
     //And we also create a int resource for profile picture in the header view
 
-    String NAME = "Zhambul Ermagambet";
-    String EMAIL = "zhambul-96@mail.ru";
+    String NAME = Account.getName();
+    int POINTS = Account.getPoints();
     int PROFILE = R.drawable.zhambul;
 
     private Toolbar toolbar;
@@ -130,7 +130,7 @@ public class App  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,EMAIL,PROFILE,App.this);
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE,App.this);
 
 
         mRecyclerView.setAdapter(mAdapter);
@@ -154,7 +154,7 @@ public class App  extends ActionBarActivity {
                 .setTitle("Выход")
                 .setMessage("Вы уверены, что хотите выйти?")
                 .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes,
+                .setPositiveButton("Да",
                         new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface arg0, int arg1) {

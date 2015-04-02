@@ -12,8 +12,9 @@ public final class Account {
     public static String access_token;
     public static long user_id;
 
-    private int PositionInTop;
-    private String Name;
+    private static int PositionInTop;
+    private static String Name = "Жамбыл Ермагамбет";
+    private static int Points = 6420; //TODO: запись в бд всех очков удаленно
 
     public static void save(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -32,10 +33,10 @@ public final class Account {
 
     }
 
-    public String getName(){
-        return Name;
-    }
-    public int getPosition(){
-        return PositionInTop;
-    }
+    public static String getName(){return Name;}
+    public static int getPosition(){return PositionInTop;}
+    public static int getPoints(){return Points;}
+    public static void setPoints(int p){Points = p;}
+    public static void addPoints(int p){Points =+ p;}
+
 }

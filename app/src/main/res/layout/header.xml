@@ -21,20 +21,20 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:textColor="#ffffff"
-            android:text="Zhambul Ermagambet"
+            android:text="Жамбыл Ерамагмбет"
             android:textSize="14sp"
             android:textStyle="bold"
 
             />
 
         <TextView
-            android:id="@+id/email"
+            android:id="@+id/points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="5dp"
-            android:text="zhambul-96@mail.ru"
+            android:text="6420 очков"
             android:textSize="14sp"
             android:textStyle="normal"
 
