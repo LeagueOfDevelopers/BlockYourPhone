@@ -1,10 +1,14 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -100,6 +104,8 @@ public class Top_Tab1 extends Fragment {
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
         PostToWallButton.setTypeface(type_thin);
+        PostToWallButton.setBackgroundColor(getActivity().getResources().getColor(R.color.ColorPrimaryDark));
+        PostToWallButton.setTextColor(Color.WHITE);
 
         NoFriendsText = (TextView)v.findViewById(R.id.NoFriendsText);
         NoFriendsText.setVisibility(View.GONE);
@@ -108,8 +114,24 @@ public class Top_Tab1 extends Fragment {
         VkRowListView1 = (ListView) v.findViewById(R.id.VkRowListView1);
         VkRowListView1.setAdapter(sAdapter1);
 
-
     }
+ /*   private View.OnClickListener qweqwe = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view) {
+           asdasdasd.setText(String.valueOf(getDB(getActivity())));
+        }
+    };
+
+    private String getDB(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if( prefs != null) {
+            String text = prefs.getString("FriendFirstName0", null);
+            return text;
+        }
+        else return null;
+    }
+    */
     private View.OnClickListener onWallButtonClickListener = new View.OnClickListener()
     {
         @Override

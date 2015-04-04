@@ -7,7 +7,6 @@ import com.perm.kate.api.User;
  */
 public class Friend extends User{
 
-
    /* private String Name;
     private int PositionInTop;
     private String dateFormat;

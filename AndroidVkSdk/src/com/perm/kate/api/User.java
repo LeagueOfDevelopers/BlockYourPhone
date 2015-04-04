@@ -37,7 +37,7 @@ public class User implements Serializable {
      * <b>В запрос надо добавить photo_100</b>
      * URL квадратной фотографии 100х100
      */
-    public String photo_medium_rec;	//photo_100 квадратная
+        public String photo_medium_rec;	//photo_100 квадратная
     /** 
      * В запрос надо добавить photo_max
      * URL квадратной фотографии максимального формата, <b>у некоторых пользователей, которые загружали фотографию давно её нет</b>

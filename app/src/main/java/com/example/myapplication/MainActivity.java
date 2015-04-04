@@ -14,6 +14,7 @@ public class MainActivity extends Activity {
 
     Intent app_intent;
     static Api api;
+    Vk vk = new Vk();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,12 +29,15 @@ public class MainActivity extends Activity {
         //Восстановление сохранённой сессии вк
         Account.restore(this);
 
-        api =new Api(Account.access_token, Constants.API_ID);
+        api = new Api(Account.access_token, Constants.API_ID);
 
-        if(Account.access_token == null)
+        if(Account.access_token== null)
             app_intent = new Intent(this, Vk.class);
-        else
+        else {
             app_intent = new Intent(this, App.class);
+            //вытаскиваем друзей в отдельном потоке
+            vk.getData(MainActivity.this);
+        }
         startActivity(app_intent);
         finish();
     }

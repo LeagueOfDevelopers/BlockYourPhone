@@ -158,7 +158,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 }
             }
             holder.textView.setText(mNavTitles[position - 1]); // Setting the Text with the array of our Titles
-            Typeface type_medium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+            //Typeface type_medium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
             //holder.textView.setTypeface(type_medium);
             holder.imageView.setImageResource(mIcons[position - 1]);// Setting the image with array of our icons
             if(context.getClass().getSimpleName().equals("App")) {

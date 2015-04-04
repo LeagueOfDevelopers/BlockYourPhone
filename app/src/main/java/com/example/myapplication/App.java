@@ -11,14 +11,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by Жамбыл on 26.03.2015.
@@ -46,12 +43,17 @@ public class App  extends ActionBarActivity {
     LinearLayout layoutFromRecycler;
    // Account account = new Account();
     ActionBarDrawerToggle mDrawerToggle;
+    Vk vk = new Vk();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
+        //грузим друзей в другом потоке
+        //TODO: проверка интеренет конекшна
+
         startUI();
+
         if(Account.user_id == 0)
             Account.restore(this);
         //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
@@ -85,7 +87,7 @@ public class App  extends ActionBarActivity {
                             Account.access_token=null;
                             Account.user_id=0;
                             Account.save(App.this);
-
+                            //Account.exit(App.this);
                             intent = new Intent(App.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -148,6 +150,7 @@ public class App  extends ActionBarActivity {
         Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
         functional.setTypeface(type_thin);
     }
+
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)

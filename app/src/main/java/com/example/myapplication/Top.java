@@ -104,6 +104,7 @@ public class Top  extends ActionBarActivity {
                             Account.access_token=null;
                             Account.user_id=0;
                             Account.save(Top.this);
+                            //Account.exit(Top.this);
 
                             intent = new Intent(Top.this, MainActivity.class);
                             startActivity(intent);
