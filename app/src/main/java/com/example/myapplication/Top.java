@@ -1,8 +1,7 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,19 +11,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.jar.Attributes;
-
-import javax.xml.namespace.NamespaceContext;
+import com.vk.sdk.VKSdk;
 
 /**
  * Created by Жамбыл on 27.03.2015.
@@ -38,6 +29,7 @@ public class Top  extends ActionBarActivity {
     String NAME = Account.getName();
     int POINTS = Account.getPoints();
     int PROFILE = R.drawable.zhambul;
+    Bitmap PROFILE_PHOTO = Account.getPhoto();
 
     private Toolbar toolbar;
 
@@ -99,15 +91,8 @@ public class Top  extends ActionBarActivity {
                         case 2:
                             break;
                         case 3:
-                            MainActivity.api = null;
-                            Vk.api = null;
-                            Account.access_token=null;
-                            Account.user_id=0;
-                            Account.save(Top.this);
-                            //Account.exit(Top.this);
-
-                            intent = new Intent(Top.this, MainActivity.class);
-                            startActivity(intent);
+                            VKSdk.logout();
+                            startActivity(new Intent(Top.this,MainActivity.class));
                             finish();
                             break;
                     }
@@ -119,10 +104,8 @@ public class Top  extends ActionBarActivity {
 
             @Override
             public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-
             }
         });
-
 
         mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
 
@@ -152,7 +135,7 @@ public class Top  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE,Top.this);
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
 
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         pager = (ViewPager) findViewById(R.id.pager);

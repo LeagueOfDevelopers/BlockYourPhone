@@ -5,14 +5,4 @@
     android:orientation="vertical"
     android:id="@+id/vk"
     android:weightSum="1">
-
-    <Button
-        android:layout_marginTop="300dp"
-        android:id="@+id/authorize"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Авторизация через Вконтакте"
-        android:layout_weight="0.09" />
-
-
 </LinearLayout>

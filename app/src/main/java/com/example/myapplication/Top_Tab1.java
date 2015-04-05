@@ -1,14 +1,12 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,10 +16,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.perm.kate.api.Api;
-
-import org.w3c.dom.Text;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKAttachments;
+import com.vk.sdk.api.model.VKWallPostResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +62,6 @@ public class Top_Tab1 extends Fragment {
         ArrayList<Map<String, Object>> data;
         Map<String, Object> m;
 
-    Vk vk = new Vk();
 
 
     @Override
@@ -66,6 +69,7 @@ public class Top_Tab1 extends Fragment {
         View v =inflater.inflate(R.layout.top_tab_1,container,false);
 
         StartUI(v);
+
         //Names.add("Жамбыл");
         //TODO: проверка установил ли друг приложения
 
@@ -90,6 +94,7 @@ public class Top_Tab1 extends Fragment {
             m.put(ATTRIBUTE_NAME_TEXT_NAME, Names.get(i));
             m.put(ATTRIBUTE_NAME_TEXT_PLACE, Places[i]);
             m.put(ATTRIBUTE_NAME_IMAGE, img);
+
             data.add(m);
 
             // создаем адаптер
@@ -103,7 +108,7 @@ public class Top_Tab1 extends Fragment {
         PostToWallButton = (Button)v.findViewById(R.id.PostToWallButton);
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
-        PostToWallButton.setTypeface(type_thin);
+       // PostToWallButton.setTypeface(type_thin);
         PostToWallButton.setBackgroundColor(getActivity().getResources().getColor(R.color.ColorPrimaryDark));
         PostToWallButton.setTextColor(Color.WHITE);
 
@@ -115,23 +120,7 @@ public class Top_Tab1 extends Fragment {
         VkRowListView1.setAdapter(sAdapter1);
 
     }
- /*   private View.OnClickListener qweqwe = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View view) {
-           asdasdasd.setText(String.valueOf(getDB(getActivity())));
-        }
-    };
 
-    private String getDB(Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if( prefs != null) {
-            String text = prefs.getString("FriendFirstName0", null);
-            return text;
-        }
-        else return null;
-    }
-    */
     private View.OnClickListener onWallButtonClickListener = new View.OnClickListener()
     {
         @Override
@@ -143,12 +132,32 @@ public class Top_Tab1 extends Fragment {
                     .setPositiveButton("Да",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface arg0, int arg1) {
-                                    vk.WallText(getResources().getString(R.string.WallText_noFriends), getActivity());
+                                    makePost(null, "Test!");
                                     getActivity().onBackPressed();
                                 }
                             }).create().show();
         }
     };
+    private void makePost(VKAttachments attachments, String message) {
+        VKRequest post = VKApi.wall().post(VKParameters.from(VKApiConst.OWNER_ID, Account.Id, VKApiConst.ATTACHMENTS, attachments, VKApiConst.MESSAGE, message));
+        post.setModelClass(VKWallPostResult.class);
+        post.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                Toast.makeText(getActivity(), "Запись успешно добавлена", Toast.LENGTH_LONG).show();
+            }
 
-
+            @Override
+            public void onError(VKError error) {
+                showError(error.apiError != null ? error.apiError : error);
+            }
+        });
+    }
+    private void showError(VKError error) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(error.errorMessage)
+                .setPositiveButton("OK", null)
+                .show();
+    }
 }

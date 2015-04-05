@@ -3,8 +3,11 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,6 +19,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.VKUIHelper;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiUser;
+import com.vk.sdk.api.model.VKList;
+import com.vk.sdk.api.model.VKUsersArray;
 
 /**
  * Created by Жамбыл on 26.03.2015.
@@ -31,9 +46,9 @@ public class App  extends ActionBarActivity {
     //Similarly we Create a String Resource for the name and email in the header view
     //And we also create a int resource for profile picture in the header view
 
-    String NAME = Account.getName();
+    String NAME = "Buf";
     int POINTS = Account.getPoints();
-    int PROFILE = R.drawable.zhambul;
+    Bitmap PROFILE_PHOTO;
 
     private Toolbar toolbar;
     RecyclerView mRecyclerView;
@@ -41,21 +56,18 @@ public class App  extends ActionBarActivity {
     RecyclerView.LayoutManager mLayoutManager;
     DrawerLayout Drawer;
     LinearLayout layoutFromRecycler;
-   // Account account = new Account();
     ActionBarDrawerToggle mDrawerToggle;
-    Vk vk = new Vk();
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
-        //грузим друзей в другом потоке
         //TODO: проверка интеренет конекшна
-
+        getUserData();
         startUI();
 
-        if(Account.user_id == 0)
-            Account.restore(this);
+
         //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
         final GestureDetector mGestureDetector =
                 new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
@@ -82,14 +94,8 @@ public class App  extends ActionBarActivity {
                             startActivity(intent);
                             break;
                         case 3:
-                            MainActivity.api = null;
-                            Vk.api = null;
-                            Account.access_token=null;
-                            Account.user_id=0;
-                            Account.save(App.this);
-                            //Account.exit(App.this);
-                            intent = new Intent(App.this, MainActivity.class);
-                            startActivity(intent);
+                            VKSdk.logout();
+                            startActivity(new Intent(App.this, MainActivity.class));
                             finish();
                             break;
                     }
@@ -122,6 +128,44 @@ public class App  extends ActionBarActivity {
         mDrawerToggle.syncState();
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VKUIHelper.onResume(this);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        VKUIHelper.onActivityResult(this, requestCode, resultCode, data);
+    }
+
+    private void getUserData(){
+        VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,
+                "id,first_name,last_name,photo_100,"));
+
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                VKList<VKApiUser> MainUser = (VKList<VKApiUser>)response.parsedModel;
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("AccountFirstName", MainUser.get(0).first_name);
+                editor.putString("AccountLastName", MainUser.get(0).last_name);
+                editor.putString("AccountPhoto", MainUser.get(0).photo_100);
+                editor.putLong("AccountId", MainUser.get(0).id);
+                editor.commit();
+
+                Account.setAccountData(App.this);
+                NAME = Account.getName();
+                PROFILE_PHOTO = Account.getPhoto();
+
+                mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
+                mRecyclerView.setAdapter(mAdapter);
+
+            }
+    });}
+
 
     private void startUI()
     {
@@ -132,11 +176,10 @@ public class App  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE,App.this);
 
-
+        //NAME = Account.getName();
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
         mRecyclerView.setAdapter(mAdapter);
-
         mLayoutManager = new LinearLayoutManager(this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -170,26 +213,4 @@ public class App  extends ActionBarActivity {
                             }
                         }).create().show();
     }
-
-    /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }

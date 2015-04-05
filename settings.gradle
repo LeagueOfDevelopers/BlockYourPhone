@@ -1,1 +1,2 @@
-include ':AndroidVkSdk',':app'
+include ':app', 'vksdk_library'
+

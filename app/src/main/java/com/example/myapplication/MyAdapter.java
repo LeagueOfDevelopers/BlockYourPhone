@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +26,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private int mIcons[];       // Int Array to store the passed icons resource value from App.java or Top.java
 
     private String name;        //String Resource for header View Name
-    private int profile;        //int Resource for header view profile picture
+    private Bitmap profile;        //int Resource for header view profile picture
     private int points;       //String Resource for header view email
     Context context;
     LinearLayout layoutFromRecycler;
@@ -98,7 +99,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 */
 
     }
-    MyAdapter(String Titles[],int Icons[],String Name,int _points, int Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
+    MyAdapter(String Titles[],int Icons[],String Name,int _points, Bitmap Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
         mNavTitles = Titles;                //have seen earlier
         mIcons = Icons;
@@ -174,7 +175,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         }
         else{
-            holder.profile.setImageResource(profile);           // Similarly we set the resources for header view
+            holder.profile.setImageBitmap(profile);           // Similarly we set the resources for header view
             holder.Name.setText(name);
             holder.points.setText(points + " очков");
             holder.points.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"));
@@ -185,6 +186,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mNavTitles.length+1;                               // the number of items in the list will be +1 the titles including the header view.
     }
+
+
 
 
 
