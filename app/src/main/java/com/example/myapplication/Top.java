@@ -1,8 +1,12 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,10 +31,9 @@ public class Top  extends ActionBarActivity {
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
     //Для хедера
-    String NAME = Account.getName();
+    String NAME;
     int POINTS = Account.getPoints();
-    int PROFILE = R.drawable.zhambul;
-    Bitmap PROFILE_PHOTO = Account.getPhoto();
+    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
 
     private Toolbar toolbar;
 
@@ -43,7 +47,6 @@ public class Top  extends ActionBarActivity {
     SlidingTabLayout tabs;
     CharSequence Titles[]={"Друзья","Все"};
     LinearLayout layoutFromRecycler;
-
     ActionBarDrawerToggle mDrawerToggle;
 
     @Override
@@ -52,80 +55,6 @@ public class Top  extends ActionBarActivity {
         setContentView(R.layout.top);
 
         startUI();
-
-
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.Grey);
-            }
-        });
-
-        // Setting the ViewPager For the SlidingTabsLayout
-
-        final GestureDetector mGestureDetector = new GestureDetector
-          (Top.this, new GestureDetector.SimpleOnGestureListener() {
-            @Override public boolean onSingleTapUp(MotionEvent e) {
-                return true;
-            }
-
-        });
-
-
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-                View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
-
-                if(child!=null && mGestureDetector.onTouchEvent(motionEvent)){
-                    Intent intent = new Intent();
-                    Drawer.closeDrawers();
-                    switch(recyclerView.getChildPosition(child))
-                    {
-                        case 1:
-                            //intent = new Intent(Top.this, App.class);
-                            //startActivity(intent);
-                            finish();
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            VKSdk.logout();
-                            startActivity(new Intent(Top.this,MainActivity.class));
-                            finish();
-                            break;
-                    }
-                   // Toast.makeText(App.this, "The Item Clicked is: " + recyclerView.getChildPosition(child), Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-            }
-        });
-
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
-            }
-
-        };
-        Drawer.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-
     }
     private void startUI()
     {
@@ -135,6 +64,14 @@ public class Top  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Top.this);
+
+        if(prefs!= null) {
+            NAME = prefs.getString("AccountFirstName", null) +" " +  prefs.getString("AccountLastName", null);
+            String PhotoEncoded = prefs.getString("AccountPhoto", null);
+            byte[] asd = PhotoEncoded.getBytes();
+            PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
+        }
         mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
 
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
@@ -150,29 +87,78 @@ public class Top  extends ActionBarActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);
         layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.Grey);
+            }
+        });
+
+        // Setting the ViewPager For the SlidingTabsLayout
+
+        final GestureDetector mGestureDetector = new GestureDetector
+                (Top.this, new GestureDetector.SimpleOnGestureListener() {
+                    @Override public boolean onSingleTapUp(MotionEvent e) {
+                        return true;
+                    }
+
+                });
+
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+                View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
+
+                if(child!=null && mGestureDetector.onTouchEvent(motionEvent)){
+                    Intent intent = new Intent();
+                    Drawer.closeDrawers();
+                    switch(recyclerView.getChildPosition(child))
+                    {
+                        case 1:
+                            finish();
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            new AlertDialog.Builder(Top.this)
+                                    .setTitle("Выход")
+                                    .setMessage("Вы уверены, что хотите выйти из аккаунта?")
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setPositiveButton("Да",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface arg0, int arg1) {
+                                                    VKSdk.logout();
+                                                    startActivity(new Intent(Top.this, MainActivity.class));
+                                                    finish();
+                                                }
+                                            }).create().show();
+                            break;
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+            }
+        });
+
+        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        Drawer.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
     }
 
-
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }

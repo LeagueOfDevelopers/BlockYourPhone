@@ -40,8 +40,7 @@ public class MainActivity  extends FragmentActivity {
         VKUIHelper.onCreate(this);
         VKSdk.initialize(sdkListener, Constants.API_ID);
         if (VKSdk.wakeUpSession()) {
-            //Top_Tab2 tab = new Top_Tab2();
-            //tab.getFriends(MainActivity.this);
+
             //tab.LoadFriends(MainActivity.this);
             startApp();
             finish();

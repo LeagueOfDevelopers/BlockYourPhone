@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.vk.sdk.api.VKApi;
@@ -34,28 +34,26 @@ import java.util.Map;
 public class Top_Tab2 extends Fragment {
     Typeface type_thin;
     ListView VkRowListView2;
+    List<byte[]>PhotoAsBytesList = new ArrayList<byte[]>();
     //Данные для вк_адаптера
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
+    final int NUMBER_OF_SHOWING_USERS = 10;
     List<String> FriendNames =  new ArrayList<String>();
-    List<Bitmap> FriendImages = new ArrayList<Bitmap>();
-    Bitmap test;
-    String[] Points = {"6420","5840","4480","3200","2100","1980","1500"};
 
-    int img = R.drawable.zhambul;
-
-
+    //пока статичные
+    String[] Points = {"6420","5840","4480","3200","2100","1980","1500", "1200", "845", "600"};
 
     // массив имен атрибутов, из которых будут читаться данные
     String[] from = { ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_RAITING,
             ATTRIBUTE_NAME_IMAGE };
+
     // массив ID View-компонентов, в которые будут вставлять данные
     int[] to = { R.id.vk_name, R.id.vk_raiting, R.id.vk_photo };
 
     //Дата, куда пакуем
-    ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>(
-            7);//TODO: не забудь поменять
+    ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>(NUMBER_OF_SHOWING_USERS);
     Map<String, Object> m;
 
     @Override
@@ -63,6 +61,7 @@ public class Top_Tab2 extends Fragment {
         View v = inflater.inflate(R.layout.top_tab_2,container,false);
 
         StartUI(v);
+        LoadFriends(getActivity());
 
         //Пакуем и отправляем
         PackAndSendData(v);
@@ -75,13 +74,12 @@ public class Top_Tab2 extends Fragment {
     }
     private void PackAndSendData(View v)
     {
-        getFriends(getActivity());
-        LoadFriends(getActivity());
-        for(int i=0;i< 7; i++) {
+
+        for(int i=0;i< NUMBER_OF_SHOWING_USERS; i++) {
             m = new HashMap<String, Object>();
             m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
             m.put(ATTRIBUTE_NAME_TEXT_RAITING, Points[i] + " очков");
-            m.put(ATTRIBUTE_NAME_IMAGE, FriendImages.get(i));
+            m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
             data.add(m);
 
             // создаем адаптер
@@ -92,36 +90,17 @@ public class Top_Tab2 extends Fragment {
             VkRowListView2.setAdapter(sAdapter2);
         }
     }
-    public void getFriends(final Context context){
-        VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
-                "id,first_name,last_name,photo_100,"));
-        request.executeWithListener(new VKRequest.VKRequestListener() {
-            @Override
-            public void onComplete(VKResponse response) {
-                super.onComplete(response);
-                VKList<VKApiUser> Friends = (VKList<VKApiUser>)response.parsedModel;
 
-                SharedPreferences prefs  = PreferenceManager.getDefaultSharedPreferences(context);
-                SharedPreferences.Editor editor = prefs.edit();
-
-                for(int i = 0; i< Friends.size();++i) {
-                    editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
-                    editor.putString("FriendLastName"+ String.valueOf(i), Friends.get(i).last_name);
-                    editor.putString("FriendPhoto"+ String.valueOf(i), Friends.get(i).photo_100);
-                    editor.commit();
-                }
-            }
-        });
-    }
     public void LoadFriends(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String photoUrl;
-        for(int i=0;i< 7; i++){
+        for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++){
             if (prefs != null){
                 FriendNames.add(prefs.getString("FriendFirstName" + String.valueOf(i), null) +
-                            " " + prefs.getString("FriendLastName" + String.valueOf(i), null));
-                photoUrl = prefs.getString("FriendPhoto"+ String.valueOf(i), null);
-                FriendImages.add(Account.convertUrlToImage(photoUrl));
+                          " " + prefs.getString("FriendLastName" + String.valueOf(i), null));
+                String PhotoEncoded = prefs.getString("FriendPhoto"+ String.valueOf(i), null);
+                byte[] b = PhotoEncoded.getBytes();
+                byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
+                PhotoAsBytesList.add(PhotoAsBytes);
             }
         }
     }

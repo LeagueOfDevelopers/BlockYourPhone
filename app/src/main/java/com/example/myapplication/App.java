@@ -1,10 +1,12 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,9 +16,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +36,8 @@ import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
 import com.vk.sdk.api.model.VKUsersArray;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * Created by Жамбыл on 26.03.2015.
  */
@@ -39,7 +45,7 @@ public class App  extends ActionBarActivity {
     //Главная
     String TITLES[] = {"Главная","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
-    TextView functional;
+    Button MainBlockButton;
    // LinearLayout layoutFromRecycler;
    // Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
     //Typeface type_medium = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
@@ -48,7 +54,7 @@ public class App  extends ActionBarActivity {
 
     String NAME = "Buf";
     int POINTS = Account.getPoints();
-    Bitmap PROFILE_PHOTO;
+    byte [] PROFILE_PHOTO;
 
     private Toolbar toolbar;
     RecyclerView mRecyclerView;
@@ -58,25 +64,59 @@ public class App  extends ActionBarActivity {
     LinearLayout layoutFromRecycler;
     ActionBarDrawerToggle mDrawerToggle;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
         //TODO: проверка интеренет конекшна
         getUserData();
+        getFriends(App.this);
         startUI();
+        setLocalData();
 
 
+    }
+    private void startUI(){
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Главная");
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+            @Override
+            public void onDrawerOpened(View drawerView) {super.onDrawerOpened(drawerView);}
+            @Override
+            public void onDrawerClosed(View drawerView) {super.onDrawerClosed(drawerView);}
+        };
+        Drawer.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        //NAME = Account.getName();
+
+        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
+
+        MainBlockButton= (Button)findViewById(R.id.MainBlockButton);
+        Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
+        MainBlockButton.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
+        MainBlockButton.setTextColor(Color.WHITE);
         //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
         final GestureDetector mGestureDetector =
                 new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
-
-            @Override public boolean onSingleTapUp(MotionEvent e) {
-                return true;
-            }
-
-        });
+                    @Override public boolean onSingleTapUp(MotionEvent e) {
+                        return true;
+                    }
+                });
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
@@ -94,9 +134,18 @@ public class App  extends ActionBarActivity {
                             startActivity(intent);
                             break;
                         case 3:
-                            VKSdk.logout();
-                            startActivity(new Intent(App.this, MainActivity.class));
-                            finish();
+                            new AlertDialog.Builder(App.this)
+                                    .setTitle("Выход")
+                                    .setMessage("Вы уверены, что хотите выйти из аккаунта?")
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setPositiveButton("Да",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface arg0, int arg1) {
+                                                    VKSdk.logout();
+                                                    startActivity(new Intent(App.this, MainActivity.class));
+                                                    finish();
+                                                }
+                                            }).create().show();
                             break;
                     }
                     return true;
@@ -109,29 +158,12 @@ public class App  extends ActionBarActivity {
 
             }
         });
-
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-
-
-
-        };
-        mDrawerToggle.syncState();
-
     }
     @Override
     protected void onResume() {
         super.onResume();
         VKUIHelper.onResume(this);
+        setLocalData();
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -141,7 +173,6 @@ public class App  extends ActionBarActivity {
     private void getUserData(){
         VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,
                 "id,first_name,last_name,photo_100,"));
-
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -150,50 +181,92 @@ public class App  extends ActionBarActivity {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
                 SharedPreferences.Editor editor = prefs.edit();
+
+                String photoUrl = MainUser.get(0).photo_100;
+                Bitmap photoBm = null;
+                if(photoUrl!=null){
+                    String previousUrl =  prefs.getString("AccountPhotoUrl", null);
+                    if(photoUrl!=previousUrl) {
+                        photoBm = Account.convertUrlToImage(photoUrl);
+                    }
+                }
+                //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                if(photoBm!= null)
+                    photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] b = baos.toByteArray();
+                String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                if(encodedPhoto == null)
+                    Toast.makeText(App.this,"Интернет пиздец asd",Toast.LENGTH_LONG).show();
+
                 editor.putString("AccountFirstName", MainUser.get(0).first_name);
                 editor.putString("AccountLastName", MainUser.get(0).last_name);
-                editor.putString("AccountPhoto", MainUser.get(0).photo_100);
+                editor.putString("AccountPhoto", encodedPhoto);
+                editor.putString("AccountPhotoUrl",MainUser.get(0).photo_100);
                 editor.putLong("AccountId", MainUser.get(0).id);
                 editor.commit();
-
-                Account.setAccountData(App.this);
-                NAME = Account.getName();
-                PROFILE_PHOTO = Account.getPhoto();
-
-                mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
-                mRecyclerView.setAdapter(mAdapter);
 
             }
     });}
 
+    public void getFriends(final Context context){
+        VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
+                "id,first_name,last_name,photo_100,"));
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(final VKResponse response) {
+                super.onComplete(response);
+                new Thread(){
+                    @Override
+                    public void run() {
+                        VKList<VKApiUser> Friends = (VKList<VKApiUser>) response.parsedModel;
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences.Editor editor = prefs.edit();
 
-    private void startUI()
-    {
+                        for (int i = 0; i < Friends.size(); ++i) {
+                            String photoUrl = Friends.get(i).photo_100;
+                            Bitmap photoBm = null;
+                            if(photoUrl!=null){
+                                String previousUrl =  prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
+                                if(photoUrl!=previousUrl) {
+                                    photoBm = Account.convertUrlToImage(photoUrl);
+                                }
+                            }
+                            //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            if(photoBm!= null)
+                            photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Главная");
+                            byte[] b = baos.toByteArray();
+                            String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
-        mRecyclerView.setHasFixedSize(true);
-
+                            editor.putString("FriendPhoto"+String.valueOf(i),encodedPhoto);
+                            editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
+                            editor.putString("FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
+                            editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
+                            editor.commit();
+                        }
+                    }}.start();
+            }
+        });
+    }
+    private void setLocalData(){
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(App.this);
+        //Account.setAccountData(App.this);
         //NAME = Account.getName();
+        if(prefs1!= null) {
+            NAME = prefs1.getString("AccountFirstName", null) + " "+  prefs1.getString("AccountLastName", null);
+            String PhotoEncoded = prefs1.getString("AccountPhoto", null);
+            if(PhotoEncoded != null) {
+                byte[] asd = PhotoEncoded.getBytes();
+                PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
+            }
+        }
+        //PROFILE_PHOTO = Account.getPhotoAsBytes();
+
         mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
         mRecyclerView.setAdapter(mAdapter);
-        mLayoutManager = new LinearLayoutManager(this);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);
-        Drawer.setDrawerListener(mDrawerToggle);
-
-        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
-
-        functional = (TextView)findViewById(R.id.functional);
-        Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
-        functional.setTypeface(type_thin);
     }
-
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)

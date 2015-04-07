@@ -19,18 +19,16 @@
             layout="@layout/tool_bar">
         </include>
 
-        <TextView
-            android:layout_marginTop="200dp"
+        <Button
+            android:layout_marginTop="400dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Основной функционал"
-            android:id="@+id/functional"
+            android:text="Заблокировать"
+            android:textSize="9pt"
+            android:id="@+id/MainBlockButton"
             android:layout_gravity="center_horizontal" />
 
-
     </LinearLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerView"
         android:layout_width="320dp"
@@ -40,6 +38,7 @@
         android:scrollbars="vertical">
 
     </android.support.v7.widget.RecyclerView>
+
 
 </android.support.v4.widget.DrawerLayout>
 

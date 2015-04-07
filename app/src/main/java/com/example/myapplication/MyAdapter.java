@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Жамбыл on 27.03.2015.
@@ -26,7 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private int mIcons[];       // Int Array to store the passed icons resource value from App.java or Top.java
 
     private String name;        //String Resource for header View Name
-    private Bitmap profile;        //int Resource for header view profile picture
+    private byte[] profile1;        //int Resource for header view profile picture
     private int points;       //String Resource for header view email
     Context context;
     LinearLayout layoutFromRecycler;
@@ -99,13 +101,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 */
 
     }
-    MyAdapter(String Titles[],int Icons[],String Name,int _points, Bitmap Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
+    MyAdapter(String Titles[],int Icons[],String Name,int _points,byte [] Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
         mNavTitles = Titles;                //have seen earlier
         mIcons = Icons;
         name = Name;
         points = _points;
-        profile = Profile;                     //here we assign those passed values to the values we declared here
+        profile1 = Profile;                     //here we assign those passed values to the values we declared here
         this.context = passedContext;
         //in adapter
     }
@@ -175,7 +177,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         }
         else{
-            holder.profile.setImageBitmap(profile);           // Similarly we set the resources for header view
+            if(profile1 == null){
+               // Toast.makeText(context, "Profile1 null", Toast.LENGTH_LONG).show();
+            }
+            else {
+                holder.profile.setImageBitmap(BitmapFactory.decodeByteArray(profile1, 0, profile1.length));
+            }
             holder.Name.setText(name);
             holder.points.setText(points + " очков");
             holder.points.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"));

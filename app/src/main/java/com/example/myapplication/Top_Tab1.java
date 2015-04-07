@@ -2,11 +2,11 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -40,6 +40,7 @@ public class Top_Tab1 extends Fragment {
     Button PostToWallButton;
     TextView NoFriendsText;
     Typeface type_thin;
+    Boolean isPosted = false;
     //Данные для вк_адаптера
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
@@ -108,7 +109,7 @@ public class Top_Tab1 extends Fragment {
         PostToWallButton = (Button)v.findViewById(R.id.PostToWallButton);
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
-       // PostToWallButton.setTypeface(type_thin);
+        //PostToWallButton.setTypeface(type_thin);
         PostToWallButton.setBackgroundColor(getActivity().getResources().getColor(R.color.ColorPrimaryDark));
         PostToWallButton.setTextColor(Color.WHITE);
 
@@ -132,28 +133,41 @@ public class Top_Tab1 extends Fragment {
                     .setPositiveButton("Да",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface arg0, int arg1) {
+                                    PostToWallButton.setVisibility(View.GONE);
                                     makePost(null, "Test!");
-                                    getActivity().onBackPressed();
+                                    if(isPosted)
+                                        Toast.makeText(getActivity(), "Запись успешно добавлена", Toast.LENGTH_SHORT).show();
+                                    else
+                                        Toast.makeText(getActivity(), "Запись не добавлена", Toast.LENGTH_SHORT).show();
+                                    //getActivity().onBackPressed();
                                 }
                             }).create().show();
         }
     };
     private void makePost(VKAttachments attachments, String message) {
-        VKRequest post = VKApi.wall().post(VKParameters.from(VKApiConst.OWNER_ID, Account.Id, VKApiConst.ATTACHMENTS, attachments, VKApiConst.MESSAGE, message));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        long id = 0;
+        if( prefs != null ) {
+            id = prefs.getLong("AccountId", 0);
+        }
+        if(id!= 0) {
+            VKRequest post = VKApi.wall().post(VKParameters.from
+                    (VKApiConst.OWNER_ID, id, VKApiConst.ATTACHMENTS, attachments, VKApiConst.MESSAGE, message));
+
         post.setModelClass(VKWallPostResult.class);
         post.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-                Toast.makeText(getActivity(), "Запись успешно добавлена", Toast.LENGTH_LONG).show();
+                isPosted = true;
             }
 
-            @Override
+            /*@Override
             public void onError(VKError error) {
                 showError(error.apiError != null ? error.apiError : error);
-            }
+            }*/
         });
-    }
+    }}
     private void showError(VKError error) {
         new AlertDialog.Builder(getActivity())
                 .setMessage(error.errorMessage)
