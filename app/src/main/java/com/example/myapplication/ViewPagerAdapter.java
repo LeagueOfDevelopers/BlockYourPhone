@@ -35,9 +35,9 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             Top_Tab2 tab2 = new Top_Tab2();
             return tab2;
         }
-        else{
-            //Toast.makeText(fm, "Your Message", Toast.LENGTH_LONG).show(); //TODO: Сделать тоаст
-            return new Fragment();}
+        else {
+            return new Fragment();
+        }
     }
 
     // This method return the titles for the Tabs in the Tab Strip

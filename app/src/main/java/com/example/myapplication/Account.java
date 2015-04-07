@@ -42,26 +42,6 @@ public class Account{
       }
   }
 
-    public static Bitmap convertUrlToImage(String photo){
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        URL url = null;
-        Bitmap image = null;
-        try {
-            url = new URL(photo);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        assert url != null;
-        try {
-            image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-       return image;
-    }
-
     public static String getName(){return  FirstName +" "+ LastName;}
     public static int getPosition(){return PositionInTop;}
     public static int getPoints(){return Points;}

@@ -82,11 +82,12 @@ public class Top_Tab2 extends Fragment {
             m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
             data.add(m);
 
+            VkRowListView2 = (ListView) v.findViewById(R.id.VkRowListView2);
             // создаем адаптер
             Vk_row_adapter sAdapter2 = new Vk_row_adapter(getActivity(), data, R.layout.vk_row,
                     from, to);
             //привязываем и сетим
-            VkRowListView2 = (ListView) v.findViewById(R.id.VkRowListView2);
+
             VkRowListView2.setAdapter(sAdapter2);
         }
     }

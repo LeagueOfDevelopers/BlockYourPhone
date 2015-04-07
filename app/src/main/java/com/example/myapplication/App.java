@@ -68,9 +68,10 @@ public class App  extends ActionBarActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
-        //TODO: проверка интеренет конекшна
+        if(!Internet.isNetworkConnection(App.this))
+            Internet.Error(App.this);
         getUserData();
-        getFriends(App.this);
+        getFriends();
         startUI();
         setLocalData();
 
@@ -187,7 +188,7 @@ public class App  extends ActionBarActivity {
                 if(photoUrl!=null){
                     String previousUrl =  prefs.getString("AccountPhotoUrl", null);
                     if(photoUrl!=previousUrl) {
-                        photoBm = Account.convertUrlToImage(photoUrl);
+                        photoBm = Internet.convertUrlToImage(photoUrl);
                     }
                 }
                 //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
@@ -209,7 +210,7 @@ public class App  extends ActionBarActivity {
             }
     });}
 
-    public void getFriends(final Context context){
+    public void getFriends(){
         VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
                 "id,first_name,last_name,photo_100,"));
         request.executeWithListener(new VKRequest.VKRequestListener() {
@@ -220,7 +221,7 @@ public class App  extends ActionBarActivity {
                     @Override
                     public void run() {
                         VKList<VKApiUser> Friends = (VKList<VKApiUser>) response.parsedModel;
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
                         SharedPreferences.Editor editor = prefs.edit();
 
                         for (int i = 0; i < Friends.size(); ++i) {
@@ -229,7 +230,7 @@ public class App  extends ActionBarActivity {
                             if(photoUrl!=null){
                                 String previousUrl =  prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
                                 if(photoUrl!=previousUrl) {
-                                    photoBm = Account.convertUrlToImage(photoUrl);
+                                    photoBm =Internet.convertUrlToImage(photoUrl);
                                 }
                             }
                             //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
@@ -244,6 +245,7 @@ public class App  extends ActionBarActivity {
                             editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
                             editor.putString("FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
                             editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
+                            editor.putLong("FriendId" + String.valueOf(i), Friends.get(i).id);
                             editor.commit();
                         }
                     }}.start();

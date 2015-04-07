@@ -3,13 +3,18 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,12 +33,12 @@ public class Vk_row_adapter extends SimpleAdapter {
     final String ATTRIBUTE_NAME_IMAGE = "image";
     private List<? extends Map<String, ?>> results;
     Context context;
-    String Name=null;
     int resource;
     TextView tt;
     LinearLayout LL;
     LinearLayout LL2;
     TextView currentText;
+
     public Vk_row_adapter(Context _context, List<? extends Map<String, ?>> data, int _resource, String[] from, int[] to) {
         super(_context, data, _resource, from, to);
         this.results = data;
@@ -46,8 +51,9 @@ public class Vk_row_adapter extends SimpleAdapter {
     public View getView(int position, View view, ViewGroup parent){
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(resource, parent, false);
-        LL= (LinearLayout)v.getRootView();
+        View v = inflater.inflate(resource, parent, false); //vk_row.xml
+        LL = (LinearLayout)v.getRootView();
+        LL.setTag(position);
         LL.setOnClickListener(onButtonClickListener);
         tt = (TextView) v.findViewById(R.id.vk_name);
         tt.setText((CharSequence) results.get(position).get(ATTRIBUTE_NAME_TEXT_NAME));
@@ -65,10 +71,18 @@ public class Vk_row_adapter extends SimpleAdapter {
     {
         @Override
         public void onClick(View view) {
-            LinearLayout asd = (LinearLayout)view;
-            LL2 = (LinearLayout)asd.getChildAt(1);
+            LinearLayout LL = (LinearLayout)view;
+            LL2 = (LinearLayout)LL.getChildAt(1);
             currentText = (TextView)LL2.getChildAt(0);
             String currentName = (String) currentText.getText();
+
+            int position=(Integer) LL.getTag();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            long  id = 0;
+            if(prefs != null){
+                id = prefs.getLong("FriendId" + String.valueOf(position), 0);
+            }
+            final long finalId = id;
             new AlertDialog.Builder(context)
                     .setTitle(currentName)
                     .setMessage("Перейти на страницу Вконтакте?")
@@ -76,7 +90,10 @@ public class Vk_row_adapter extends SimpleAdapter {
                     .setPositiveButton("Да",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface arg0, int arg1) {
-                                    //TODO: Intent на страничку
+                                    if(finalId != 0){
+                                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://vk.com/id" + String.valueOf(finalId))));
+                                        context.startActivity(i);
+                                    }
                                 }
                             }).create().show();
         }
