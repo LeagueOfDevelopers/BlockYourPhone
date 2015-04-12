@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,6 @@ public class Top_Tab2 extends Fragment {
     }
     private void PackAndSendData(View v)
     {
-
         for(int i=0;i< NUMBER_OF_SHOWING_USERS; i++) {
             m = new HashMap<String, Object>();
             m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
@@ -104,6 +104,7 @@ public class Top_Tab2 extends Fragment {
                 PhotoAsBytesList.add(PhotoAsBytes);
             }
         }
+        Log.i("Top_Tab2","Loading Friends");
     }
 
 }

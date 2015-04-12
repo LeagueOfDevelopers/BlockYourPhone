@@ -7,4 +7,5 @@
     <string name="closeDrawer">Close Drawer</string>
     <string name="WallText_noFriends">BlockPhone_WallPost_Test</string>
     <string name="InternetError">Internet connection error</string>
+    API_ID
 </resources>

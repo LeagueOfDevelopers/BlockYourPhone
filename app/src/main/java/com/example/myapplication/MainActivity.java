@@ -40,8 +40,7 @@ public class MainActivity  extends FragmentActivity {
         VKUIHelper.onCreate(this);
         VKSdk.initialize(sdkListener, Constants.API_ID);
         if (VKSdk.wakeUpSession()) {
-
-            //tab.LoadFriends(MainActivity.this);
+            Log.i("Login", "Starting app");
             startApp();
             finish();
             return;
@@ -64,8 +63,8 @@ public class MainActivity  extends FragmentActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onResume(){
+        super.onResume(); //продолжает работу приложения
         VKUIHelper.onResume(this);
         if (VKSdk.isLoggedIn()) {
             startApp();
@@ -73,7 +72,6 @@ public class MainActivity  extends FragmentActivity {
         } else {
             showLogin();
         }
-
     }
 
     @Override

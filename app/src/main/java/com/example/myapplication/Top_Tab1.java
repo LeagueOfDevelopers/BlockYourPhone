@@ -109,6 +109,7 @@ public class Top_Tab1 extends Fragment {
         PostToWallButton = (Button)v.findViewById(R.id.PostToWallButton);
         PostToWallButton.setVisibility(View.GONE);
         PostToWallButton.setOnClickListener(onWallButtonClickListener);
+
         //PostToWallButton.setTypeface(type_thin);
         PostToWallButton.setBackgroundColor(getActivity().getResources().getColor(R.color.ColorPrimaryDark));
         PostToWallButton.setTextColor(Color.WHITE);
@@ -135,10 +136,9 @@ public class Top_Tab1 extends Fragment {
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     PostToWallButton.setVisibility(View.GONE);
                                     makePost(null, "Test!");
-                                    if(isPosted)
-                                        Toast.makeText(getActivity(), "Запись успешно добавлена", Toast.LENGTH_SHORT).show();
-                                    else
-                                        Toast.makeText(getActivity(), "Запись не добавлена", Toast.LENGTH_SHORT).show();
+
+                                    //if(!isPosted)
+                                        //Toast.makeText(getActivity(), "Запись не добавлена", Toast.LENGTH_SHORT).show();
                                     //getActivity().onBackPressed();
                                 }
                             }).create().show();
@@ -158,8 +158,9 @@ public class Top_Tab1 extends Fragment {
         post.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
-                super.onComplete(response);
                 isPosted = true;
+                Toast.makeText(getActivity(), "Запись успешно добавлена", Toast.LENGTH_SHORT).show();
+                super.onComplete(response);
             }
 
             /*@Override

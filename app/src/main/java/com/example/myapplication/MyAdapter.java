@@ -71,35 +71,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         }
 
-/*
-        private View.OnClickListener Click=new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-               // drlay.closeDrawers();
-                switch(getPosition())
-                {
-                    case 1:
-                        i.setComponent(new ComponentName(contxt,Top.class));
-                        v.getContext().startActivity(i);
-                        break;
-
-                    case 3:
-                        MainActivity.api = null;
-                        Vk.api = null;
-                        Vk.account.access_token=null;
-                        Vk.account.user_id=0;
-                        Vk.account.save(contxt);
-
-                        i.setComponent(new ComponentName(contxt,MainActivity.class));
-                        v.getContext().startActivity(i);
-                        break;
-                }
-
-            }
-        };
-*/
-
     }
     MyAdapter(String Titles[],int Icons[],String Name,int _points,byte [] Profile,Context passedContext){ // MyAdapter Constructor with titles and icons parameter
         // titles, icons, name, email, profile pic are passed from the main activity as we
@@ -193,10 +164,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mNavTitles.length+1;                               // the number of items in the list will be +1 the titles including the header view.
     }
-
-
-
-
 
     // With the following method we check what type of view is being passed
     @Override

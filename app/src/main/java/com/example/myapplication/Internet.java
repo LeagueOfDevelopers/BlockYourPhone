@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public final class Internet {
         return haveConnectedWifi || haveConnectedMobile;
     }
     public static void Error(Context c){
+        Log.i("Internet", "NO INTERNET CONNECTION");
         Toast.makeText(c, "Internet is missing", Toast.LENGTH_SHORT).show();
     }
     public static Bitmap convertUrlToImage(String photo){

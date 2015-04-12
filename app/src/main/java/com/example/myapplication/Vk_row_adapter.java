@@ -32,6 +32,7 @@ public class Vk_row_adapter extends SimpleAdapter {
     final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
     private List<? extends Map<String, ?>> results;
+
     Context context;
     int resource;
     TextView tt;
@@ -44,8 +45,6 @@ public class Vk_row_adapter extends SimpleAdapter {
         this.results = data;
         context = _context;
         resource = _resource;
-
-
     }
     @Override
     public View getView(int position, View view, ViewGroup parent){
