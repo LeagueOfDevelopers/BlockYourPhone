@@ -25,4 +25,5 @@ dependencies {
     compile project(':vksdk_library')
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    //compile 'com.github.Todd-Davies:ProgressWheel:1.0'
 }

@@ -1,10 +1,9 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
@@ -27,7 +26,7 @@ import com.vk.sdk.VKSdk;
  */
 public class Top  extends ActionBarActivity {
     //Рейтинг
-    String TITLES[] = {"Главная","Рейтинг","Выход"};
+    String TITLES[] = {"Блокировка","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
     //Для хедера
@@ -43,7 +42,7 @@ public class Top  extends ActionBarActivity {
     DrawerLayout Drawer;
     int Numboftabs = 2;
     ViewPager pager;
-    ViewPagerAdapter adapter;
+    Top_ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
     CharSequence Titles[]={"Друзья","Все"};
     LinearLayout layoutFromRecycler;
@@ -72,9 +71,9 @@ public class Top  extends ActionBarActivity {
             byte[] asd = PhotoEncoded.getBytes();
             PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
         }
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
+        mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
 
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
+        adapter =  new Top_ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 

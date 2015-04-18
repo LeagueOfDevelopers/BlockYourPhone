@@ -17,7 +17,7 @@
             layout="@layout/tool_bar">
         </include>
 
-        <com.example.myapplication.SlidingTabLayout
+        <com.example.blockphone.SlidingTabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="45dp"

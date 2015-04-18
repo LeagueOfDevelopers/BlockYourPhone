@@ -1,7 +1,6 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;

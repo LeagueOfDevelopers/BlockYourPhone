@@ -1,21 +1,9 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Base64;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 
 
 public class Account{

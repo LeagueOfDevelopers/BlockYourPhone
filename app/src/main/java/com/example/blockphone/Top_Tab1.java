@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -113,6 +113,7 @@ public class Top_Tab1 extends Fragment {
         //PostToWallButton.setTypeface(type_thin);
         PostToWallButton.setBackgroundColor(getActivity().getResources().getColor(R.color.ColorPrimaryDark));
         PostToWallButton.setTextColor(Color.WHITE);
+        //PostToWallButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/RobotoCondensed-Light.ttf"));
 
         NoFriendsText = (TextView)v.findViewById(R.id.NoFriendsText);
         NoFriendsText.setVisibility(View.GONE);

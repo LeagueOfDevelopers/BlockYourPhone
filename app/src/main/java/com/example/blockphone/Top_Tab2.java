@@ -1,8 +1,7 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,15 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiUser;
-import com.vk.sdk.api.model.VKList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +63,7 @@ public class Top_Tab2 extends Fragment {
     {
         type_thin= Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
     }
+    //TODO динамическая загрузка
     private void PackAndSendData(View v)
     {
         for(int i=0;i< NUMBER_OF_SHOWING_USERS; i++) {

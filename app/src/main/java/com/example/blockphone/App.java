@@ -1,10 +1,6 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -23,16 +18,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKUIHelper;
@@ -43,35 +37,30 @@ import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
-import com.vk.sdk.api.model.VKUsersArray;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Жамбыл on 26.03.2015.
  */
 public class App  extends ActionBarActivity {
     //Главная
-    Boolean friendsGettingSuccess = false;
-    String TITLES[] = {"Главная","Рейтинг","Выход"};
+
+    String TITLES[] = {"Блокировка","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
     Button MainBlockButton;
     TextView Text1,Text2;
     String  dropdown1value, dropdown2value;
     public static double dropdown1double, dropdown2double;
     Typeface type_thin;
-    String[] Seconds = new String[] {"1 c","2 c","3 c","4 c"};
-    String[] Hours = new String[] {"1 ч","2 ч","3 ч","4 ч"};
+    Typeface type;
+    String[] Seconds = new String[] {"1 секунда","2 секунды","3 секунды","4 секунды"};
+    String[] Hours = new String[] {"1 час","2 часа","3 часа","4 часа"};
     Spinner dropdown1, dropdown2;
-   // LinearLayout layoutFromRecycler;
-   // Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
-    //Typeface type_medium = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Medium.ttf");
-    //Similarly we Create a String Resource for the name and email in the header view
-    //And we also create a int resource for profile picture in the header view
 
-    String NAME = "Buf";
+    String NAME = "Name";
     int POINTS = Account.getPoints();
     byte [] PROFILE_PHOTO;
 
@@ -89,55 +78,57 @@ public class App  extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
-        //getHeader();
+        LockScreenService.isMustBeLocked = false;
 
-        if(!Internet.isNetworkConnection(App.this)) {
-            Internet.Error(App.this);
+        if(!Internet.isNetworkConnection(App.this)){
+            //Internet.Error(App.this);
         }
+        else
+            getUserData(); //TODO load in another thread
 
-        getUserData();
         startUI();
-        getFriends();
-
+        if(Internet.isNetworkConnection(App.this))
+            getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
 
     }
- /*   @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        Log.e("App","SAVING STATE");
-        savedInstanceState.putBoolean("isShowedInternetError", isShowedInternetError);
-}
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.e("App","RESTORING STATE");
-        isShowedInternetError = savedInstanceState.getBoolean("isShowedInternetError");
-    }*/
 
     private void startUI(){
+        type = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
+        type_thin = Typeface.createFromAsset(App.this.getAssets(), "fonts/Roboto-Thin.ttf");
+
         dropdown1 = (Spinner)findViewById(R.id.dropdown1);
         dropdown2 = (Spinner)findViewById(R.id.dropdown2);
+        dropdown1.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
+        dropdown2.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
         dropdown1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent,
                                        View view, int pos, long id) {
-                dropdown1value   = parent.getItemAtPosition(pos).toString();
+                dropdown1value = parent.getItemAtPosition(pos).toString();
+                try {
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                    ((TextView) parent.getChildAt(0)).setTextSize(20);
+                    ((TextView) parent.getChildAt(0)).setGravity(Gravity.CENTER);
+                }
+                catch (Exception e){
+                    Log.e("App","dropdown1 error");
+                }
+                //((TextView) parent.getChildAt(0)).setTypeface(type);
                 switch (dropdown1value) {
-                    case "1 ч":
+                    case "1 час":
                         dropdown1double = 1;
                         break;
-                    case "2 ч":
+                    case "2 часа":
                         dropdown1double = 2;
                         break;
-                    case "3 ч":
+                    case "3 часа":
                         dropdown1double = 3;
                         break;
-                    case "4 ч":
+                    case "4 часа":
                         dropdown1double = 4;
                         break;
                 }
-                //Toast.makeText(App.this,String.valueOf(dropdown1double),Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -152,26 +143,32 @@ public class App  extends ActionBarActivity {
             public void onItemSelected(AdapterView<?> parent,
                                        View view, int pos, long id) {
                 dropdown2value = parent.getItemAtPosition(pos).toString();
+                try {
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                    ((TextView) parent.getChildAt(0)).setTextSize(20);
+                    ((TextView) parent.getChildAt(0)).setGravity(Gravity.CENTER);
+                }catch (Exception e){
+                    Log.e("App","dropdown2 error ");
+                }
+                //((TextView) parent.getChildAt(0)).setTypeface(type);
                 switch (dropdown2value) {
-                    case "1 c":
+                    case "1 секунда":
                         dropdown2double = 1;
                         break;
-                    case "2 c":
+                    case "2 секунды":
                         dropdown2double = 2;
                         break;
-                    case "3 c":
+                    case "3 секунды":
                         dropdown2double = 3;
                         break;
-                    case "4 c":
+                    case "4 секунды":
                         dropdown2double = 4;
                         break;
                 }
-                //Toast.makeText(App.this,String.valueOf(dropdown2double),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                //dropdown2value   = "0.5 c";
             }
         });
 
@@ -184,18 +181,19 @@ public class App  extends ActionBarActivity {
         Text1 = (TextView)findViewById(R.id.Text1);
         Text2 = (TextView)findViewById(R.id.Text2);
 
-        type_thin = Typeface.createFromAsset(App.this.getAssets(), "fonts/Roboto-Thin.ttf");
+
         Text1.setTypeface(type_thin);
         Text2.setTypeface(type_thin);
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Главная");
+        getSupportActionBar().setTitle("Блокировка");
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
+        mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
         mRecyclerView.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -212,19 +210,20 @@ public class App  extends ActionBarActivity {
         Drawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        //NAME = Account.getName();
 
         layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
 
         MainBlockButton= (Button)findViewById(R.id.MainBlockButton);
-        Typeface type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
         MainBlockButton.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
         MainBlockButton.setTextColor(Color.WHITE);
+        MainBlockButton.setText("Заблокировать");
+        MainBlockButton.setTransformationMethod(null);
+        //MainBlockButton.setTypeface(type);
         MainBlockButton.setOnClickListener(onMainBlockButtonClickListener);
 
         //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
         final GestureDetector mGestureDetector =
-                new GestureDetector(App.this, new GestureDetector.SimpleOnGestureListener() {
+                new GestureDetector(App.this,  new GestureDetector.SimpleOnGestureListener() {
                     @Override public boolean onSingleTapUp(MotionEvent e) {
                         return true;
                     }
@@ -274,11 +273,17 @@ public class App  extends ActionBarActivity {
     {
         @Override
         public void onClick(View view) {
-            //THE MAIN FUNCTIONALITY
-           startActivity(new Intent(App.this, LockScreen.class));
+           //THE MAIN FUNCTIONALITY
+           Lock();
         }};
+    private void Lock(){
+        LockScreenService.isMustBeLocked = true;
+        startActivity(new Intent(App.this, LockScreenActivity.class));
+    }
     @Override
     protected void onResume() {
+        Log.i("App","onResume");
+        LockScreenService.isMustBeLocked = false;
         super.onResume();
         VKUIHelper.onResume(this);
         setLocalData();
@@ -308,10 +313,16 @@ public class App  extends ActionBarActivity {
                 if(photoUrl!=null){
                     String previousUrl =  prefs.getString("AccountPhotoUrl", null);
                     if(photoUrl!=previousUrl) {
-                        photoBm = Internet.convertUrlToImage(photoUrl);
+                        try{
+                            photoBm = Internet.convertUrlToImage(photoUrl);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger logger = Logger.getAnonymousLogger();
+                            logger.log(Level.SEVERE, "an exception was thrown while converting", e);
+                        }
                     }
                 }
-                //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 if(photoBm!= null)
                     photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -353,7 +364,14 @@ public class App  extends ActionBarActivity {
                             if(photoUrl!=null){
                                 String previousUrl =  prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
                                 if(photoUrl!=previousUrl) {
-                                    photoBm =Internet.convertUrlToImage(photoUrl);
+                                    try {
+                                        photoBm = Internet.convertUrlToImage(photoUrl);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Logger logger = Logger.getAnonymousLogger();
+                                        logger.log(Level.SEVERE, "an exception was thrown while converting", e);
+                                    }
                                 }
                             }
                             //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
@@ -363,12 +381,6 @@ public class App  extends ActionBarActivity {
 
                             byte[] b = baos.toByteArray();
                             String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
-
-                            if(!encodedPhoto.equals(null))
-                                friendsGettingSuccess = true;
-                            else
-                                friendsGettingSuccess = false;
-
 
                             editor.putString("FriendPhoto"+String.valueOf(i),encodedPhoto);
                             editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
@@ -380,8 +392,7 @@ public class App  extends ActionBarActivity {
                     }}.start();
             }
         });
-        if(friendsGettingSuccess){}
-            //Log.i("App", "getting friends data SUCCESS");
+
     }
 
     private void setLocalData(){
@@ -395,8 +406,7 @@ public class App  extends ActionBarActivity {
                 PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
             }
         }
-
-        mAdapter = new MyAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
+        mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
         mRecyclerView.setAdapter(mAdapter);
     }
     @Override
@@ -407,7 +417,6 @@ public class App  extends ActionBarActivity {
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton("Да",
                         new DialogInterface.OnClickListener() {
-
                             public void onClick(DialogInterface arg0, int arg1) {
                                 Intent intent = new Intent(Intent.ACTION_MAIN);
                                 intent.addCategory(Intent.CATEGORY_HOME);

@@ -1,6 +1,5 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.VKUIHelper;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.dialogs.VKCaptchaDialog;
-import com.vk.sdk.util.VKUtil;
 
 
 public class MainActivity  extends FragmentActivity {
@@ -26,6 +24,9 @@ public class MainActivity  extends FragmentActivity {
      * Scope is set of required permissions for your application
      * @see <a href="https://vk.com/dev/permissions">vk.com api permissions documentation</a>
      */
+    final String bd_name = "mcvlad";
+    final String bd_password = "qwerty123";
+
     private static final String[] sMyScope = new String[] {
             VKScope.FRIENDS,
             VKScope.WALL,
@@ -38,10 +39,11 @@ public class MainActivity  extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vk_auth);
         VKUIHelper.onCreate(this);
-        VKSdk.initialize(sdkListener, Constants.API_ID);
+        VKSdk.initialize(sdkListener, MainActivity.this.getResources().getString(R.string.API_ID));
         if (VKSdk.wakeUpSession()) {
             Log.i("Login", "Starting app");
             startApp();
+            //TODO запись в бд
             finish();
             return;
         }
@@ -70,7 +72,7 @@ public class MainActivity  extends FragmentActivity {
             startApp();
             //showLogout();
         } else {
-            showLogin();
+            showLogin(); //TODO ERROR когда включаешь интрентер в мэйн активити
         }
     }
 

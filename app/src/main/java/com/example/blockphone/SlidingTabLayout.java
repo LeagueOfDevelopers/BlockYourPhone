@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.blockphone;
 /*
  * Copyright 2014 Google Inc. All rights reserved.
  *
@@ -18,9 +18,7 @@ package com.example.myapplication;
 
 
         import android.content.Context;
-        import android.graphics.Color;
         import android.graphics.Typeface;
-        import android.os.Build;
         import android.support.v4.view.PagerAdapter;
         import android.support.v4.view.ViewPager;
         import android.util.AttributeSet;

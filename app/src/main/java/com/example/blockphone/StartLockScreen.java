@@ -1,11 +1,9 @@
-package com.example.myapplication;
+package com.example.blockphone;
 
 
 import android.app.Activity;
-import android.app.KeyguardManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.WindowManager;
 
 public class StartLockScreen extends Activity {
     /*	 KeyguardManager.KeyguardLock k1;
@@ -17,7 +15,7 @@ public class StartLockScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startService(new Intent(this,MyService.class));
+        startService(new Intent(this,LockScreenService.class));
         finish();
 
 

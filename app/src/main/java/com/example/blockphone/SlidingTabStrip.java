@@ -1,4 +1,4 @@
-package com.example.myapplication;/*
+package com.example.blockphone;/*
  * Copyright 2014 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import com.example.myapplication.SlidingTabLayout;
 
 class SlidingTabStrip extends LinearLayout {
 

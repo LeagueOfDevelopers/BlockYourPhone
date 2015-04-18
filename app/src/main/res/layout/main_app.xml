@@ -6,14 +6,16 @@
     android:id="@+id/DrawerLayoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="7dp">
+    android:elevation="7dp"
+    android:textAllCaps="false">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:background="#ffffff">
 
         <include
             android:id="@+id/tool_bar"
@@ -21,6 +23,7 @@
         </include>
 
         <RelativeLayout
+            android:layout_marginTop="20dp"
             android:layout_width="fill_parent"
             android:layout_height="167dp">
 
@@ -37,8 +40,9 @@
                 android:layout_centerHorizontal="true" />
 
             <Spinner
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="130dp"
+                android:layout_height="43dp"
+                android:textColor="@color/White"
                 android:layout_marginTop="20dp"
                 android:layout_below="@+id/Text1"
                 android:id="@+id/dropdown1"
@@ -62,13 +66,15 @@
                 android:layout_centerHorizontal="true" />
 
             <Spinner
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="130dp"
+                android:layout_height="43dp"
                 android:layout_marginTop="20dp"
                 android:layout_below="@+id/Text2"
+                android:textColor="@color/White"
                 android:id="@+id/dropdown2"
                 android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:gravity="center" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -76,16 +82,19 @@
             android:layout_height="match_parent">
 
             <Button
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="120dp"
-                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_width="250dp"
+                android:textSize="13pt"
                 android:layout_height="wrap_content"
-                android:text="Заблокировать"
+                android:text="text"
+                android:textAllCaps="false"
                 android:id="@+id/MainBlockButton"
                 android:layout_gravity="center_horizontal" />
         </RelativeLayout>
 
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerView"
         android:layout_width="320dp"
@@ -94,6 +103,7 @@
         android:background="#ffffff"
         android:scrollbars="vertical">
     </android.support.v7.widget.RecyclerView>
+
 
 
 
