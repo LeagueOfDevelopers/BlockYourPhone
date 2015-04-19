@@ -31,8 +31,8 @@ public class Top  extends ActionBarActivity {
 
     //Для хедера
     String NAME;
-    int POINTS = Account.getPoints();
-    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
+    int POINTS = Account.Points;
+    byte [] PROFILE_PHOTO = Account.PhotoAsBytes;
 
     private Toolbar toolbar;
 

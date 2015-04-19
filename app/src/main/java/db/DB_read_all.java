@@ -1,14 +1,17 @@
 package db;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
+import com.example.blockphone.Account;
 import com.example.blockphone.Internet;
 import com.example.blockphone.Top_Tab2;
 import com.vk.sdk.api.VKApi;
@@ -25,6 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,28 +57,25 @@ public class DB_read_all  extends AsyncTask<String, String, String> {
     String first_name;
     String last_name;
     String vk_id;
-    String vk_id1;
     String points;
     int I=0;
-    boolean isReady = false;
-
 
     String photo_url;
 
     JSONParser jParser = new JSONParser();
 
-    ArrayList<HashMap<String, String>> usersList;
 
     JSONArray users = null;
     public DB_read_all(Context _context){
         context = _context;
     }
+    //@TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected String doInBackground(String... strings) {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         // getting JSON string from URL
-        JSONObject json = jParser.makeHttpRequest(url_read_all, "GET", params); //TODO error ut8
+        JSONObject json = jParser.makeHttpRequest(url_read_all, "GET", params);
 
         // Check your log cat for JSON reponse
         if(json!=null){
@@ -84,65 +87,86 @@ public class DB_read_all  extends AsyncTask<String, String, String> {
                     // products found
                     // Getting Array of Products
                     users = json.getJSONArray(TAG_USERS);
+                    Log.e("users amount", String.valueOf(users.length()));
 
                     // looping through All Products
                     for (int i = 0; i < users.length(); i++) {
                         JSONObject c = users.getJSONObject(i);
-                        //I=i;
                         // Storing each json item in variable
                         id = c.getString(TAG_ID);
-                        first_name = c.getString(TAG_FIRST_NAME);
-                        last_name = c.getString(TAG_LAST_NAME);
+                        first_name = c.getString(TAG_FIRST_NAME); //
+
+                        String s = new String(first_name.getBytes("ISO-8859-1"), "Windows-1251");
+                        first_name = new String(("\uFEFF" + s).getBytes("UTF-8"));
+                        //Log.e("", first_name);
+                        last_name = c.getString(TAG_LAST_NAME);   //
+
+                        String l = new String(last_name.getBytes("ISO-8859-1"), "Windows-1251");
+                        last_name = new String(("\uFEFF" + l).getBytes("UTF-8"));
+                        //Log.e("", last_name);
                         vk_id = c.getString(TAG_VK_ID);
                         points= c.getString(TAG_POINTS);
-                        setUserPhotoUrl(vk_id, first_name, last_name,vk_id, points);
+                        if(Account.vk_id.equals(vk_id))
+                        {
+                            Account.Points = Integer.valueOf(points);
+                            Log.e("DB_read_all USER'S POINTS = ",points);
+                        }
+                        setUserPhotoUrl(first_name, last_name,vk_id, points);
+                        try {
+                            Thread.sleep (500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
 
+                       // Log.e("first", String.valueOf(i));
+/*
                         Log.e("first", String.valueOf(i));
-
                         Log.e("Db",id);
                         Log.e("Db",first_name);
                         Log.e("Db",last_name);
                         Log.e("Db",vk_id);
                         Log.e("Db",points);
+*/
 
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        if(first_name.equals(null) | last_name.equals(null)
-                                | vk_id.equals(null)| points.equals(null))
+
+                        if(first_name.equals("") | last_name.equals("")
+                                | vk_id.equals("")| points.equals(""))
                             Log.e("DB_read_all", "SMTH IS NULL");
-
-                        isReady = false;
                     }
                 } else {
                       Log.e("DB_read_all","no users found");
                 }
-            } catch (JSONException e) {
+            } catch (JSONException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         } else{
             Log.e("DB_read_all","JSON ERROR");
         }
-
         return null;
     }
-    private void setUserPhotoUrl(final String vk_id, final String _first_name,
+    private void setUserPhotoUrl(final String _first_name,
                                  final String _last_name,final String _vk_id,final String _points){
         //final String[] url = new String[1];
-        VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.USER_ID, vk_id,
+        //Log.e("second", String.valueOf(I));
+        VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.USER_ID, _vk_id,
                 VKApiConst.FIELDS, "photo_100"));
+        //setUserPhotoUrl(_first_name,_last_name,_vk_id,_points);
 
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(final VKResponse response) {
                 super.onComplete(response);
+                //Log.e("second", String.valueOf(I));
+                //Log.e("second", String.valueOf(_first_name));
                         VKList<VKApiUser> User = (VKList<VKApiUser>) response.parsedModel;
+                        if(User.get(0).photo_100!=null)
                         photo_url = User.get(0).photo_100;
                         //Log.e("PhotoUrl", photo_url);
 
                         Bitmap photoBm = null;
 
                         //Log.e("DB_read_all photo_url",photo_url);
-                        Log.e("second i", String.valueOf(I)+" " + _first_name);
+                        //Log.e("second i", String.valueOf(I)+" " + _first_name);
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                         SharedPreferences.Editor editor = prefs.edit();
                         if(photo_url !=null){
@@ -171,6 +195,13 @@ public class DB_read_all  extends AsyncTask<String, String, String> {
 
                         //editor.putString("UserPhotoUrl" + String.valueOf(I), photo_url);
 
+                //Log.e("Db",id);
+               /* Log.e("Db",_first_name);
+                Log.e("Db",_last_name);
+                Log.e("Db",_vk_id);
+                Log.e("Db",_points);*/
+                //TODO ПОЧЕМУ НЕ ВСЕ ГРУЗИТ
+
                 editor.putString("UserFirstName" + String.valueOf(I), _first_name);
                 editor.putString("UserLastName" + String.valueOf(I), _last_name);
                 editor.putString("UserVkId" + String.valueOf(I), _vk_id);
@@ -178,10 +209,18 @@ public class DB_read_all  extends AsyncTask<String, String, String> {
 
                 editor.putString("UserPhoto"+String.valueOf(I),encodedPhoto);
                         editor.commit();
-                isReady = true;
+
+                if(I==users.length()-1){
+                    Log.e("","Test start");
+                    new DB_create(context, Account.FirstName, Account.LastName,
+                        Account.vk_id).execute();}
                 I++;
-            }});
-        //return url[0];
+            }
+            @Override
+            public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+            Log.e("","Я старался");
+            } });
+
     }
 
 }

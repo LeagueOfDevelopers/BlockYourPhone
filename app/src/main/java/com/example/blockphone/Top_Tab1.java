@@ -1,6 +1,7 @@
 package com.example.blockphone;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,15 +48,19 @@ public class Top_Tab1 extends Fragment {
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
+    final int NUMBER_OF_SHOWING_USERS = 1;//TODO change
 
 
-    List<String> Names =  new ArrayList<String>();
+    List<String> FriendNames =  new ArrayList<String>();
+    List<Integer> PointsList = new ArrayList<Integer>();
+    List<byte[]>PhotoAsBytesList = new ArrayList<byte[]>();
+
 
     String[] Places = {"6420","5840","4480","3200","2100","1980","1500"};
     int img = R.drawable.zhambul;
 
     // массив имен атрибутов, из которых будут читаться данные
-    String[] from = { ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_PLACE,
+    String[] from = {ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_PLACE,
             ATTRIBUTE_NAME_IMAGE };
     // массив ID View-компонентов, в которые будут вставлять данные
     int[] to = { R.id.vk_name, R.id.vk_raiting, R.id.vk_photo };
@@ -70,13 +77,15 @@ public class Top_Tab1 extends Fragment {
         View v =inflater.inflate(R.layout.top_tab_1,container,false);
 
         StartUI(v);
-
+        LoadFriends(getActivity());
         //Names.add("Жамбыл");
         //TODO: проверка установил ли друг приложения
 
         //проверяем на наличие друзей
-        if(Names != null & !Names.isEmpty()){
-            data  = new ArrayList<Map<String, Object>>(Names.size());
+        if(FriendNames != null & !FriendNames.isEmpty()){
+            Log.e("Friendsize",String.valueOf(FriendNames.size()));
+            Log.e("Friendsize",String.valueOf(FriendNames.get(0)));
+            data  = new ArrayList<Map<String, Object>>(FriendNames.size());
             //пакуем и отправляем
             PackAndSendData(v);
         }
@@ -90,17 +99,38 @@ public class Top_Tab1 extends Fragment {
     //Пакуем и отправляем дату
     private void PackAndSendData(View v)
     {
-        for(int i=0;i<Names.size(); i++) {
+        for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++) {
             m = new HashMap<String, Object>();
-            m.put(ATTRIBUTE_NAME_TEXT_NAME, Names.get(i));
+            m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
             m.put(ATTRIBUTE_NAME_TEXT_PLACE, Places[i]);
-            m.put(ATTRIBUTE_NAME_IMAGE, img);
+            m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
 
             data.add(m);
 
-            // создаем адаптер
-            sAdapter1 = new SimpleAdapter(getActivity(), data, R.layout.vk_row,from, to);
+
         }
+        // создаем адаптер
+        sAdapter1 = new SimpleAdapter(getActivity(), data, R.layout.vk_row,from, to);
+    }
+
+    public void LoadFriends(Context context){
+        //TODO Progress dialog
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++){
+            if (prefs != null){
+                String str = prefs.getString("1FriendFirstName" + String.valueOf(i), null);
+                if(str != null && !str.isEmpty()) {
+                    FriendNames.add(prefs.getString("1FriendFirstName" + String.valueOf(i), null) +
+                            " " + prefs.getString("1FriendLastName" + String.valueOf(i), null));
+                    String PhotoEncoded = prefs.getString("1FriendPhoto" + String.valueOf(i), null);
+                    //Log.e("Tob_tab2",PhotoEncoded);
+                    byte[] b = PhotoEncoded.getBytes();
+                    byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
+                    PhotoAsBytesList.add(PhotoAsBytes);
+                }
+            }
+        }
+        Log.i("Top_Tab2","Loading Friends");
     }
     private void StartUI(View v)
     {

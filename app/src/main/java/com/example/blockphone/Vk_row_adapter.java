@@ -52,10 +52,11 @@ public class Vk_row_adapter extends SimpleAdapter {
         LL.setOnClickListener(onButtonClickListener);
         tt = (TextView) v.findViewById(R.id.vk_name);
         tt.setText((CharSequence) results.get(position).get(ATTRIBUTE_NAME_TEXT_NAME));
-
         TextView bt = (TextView) v.findViewById(R.id.vk_raiting);
-        bt.setText((CharSequence) results.get(position).get(ATTRIBUTE_NAME_TEXT_RAITING));
-
+        bt.setText(String.valueOf(results.get(position).get(ATTRIBUTE_NAME_TEXT_RAITING) +" очков"));
+        if(tt.getText().toString().equals("﻿Максим ﻿Антонов"))
+        //Log.e("","a"+tt.getText().toString()+"b");
+         bt.setText("маленькое очко");
         ImageView vt = (ImageView)v.findViewById(R.id.vk_photo);
         byte[] image = (byte[]) results.get(position).get(ATTRIBUTE_NAME_IMAGE);
         if(image == null)

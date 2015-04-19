@@ -1,5 +1,6 @@
 package com.example.blockphone;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,7 +43,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import db.DB_create;
 import db.DB_read_all;
+import db.DB_read_by_id;
 
 /**
  * Created by Жамбыл on 26.03.2015.
@@ -63,7 +66,7 @@ public class App  extends ActionBarActivity {
     Spinner dropdown1, dropdown2;
 
     String NAME = "Name";
-    int POINTS = Account.getPoints();
+    int POINTS = Account.Points;
     byte [] PROFILE_PHOTO;
 
 
@@ -81,8 +84,8 @@ public class App  extends ActionBarActivity {
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
+        //new DB_read_all(App.this).execute();
 
-        new DB_read_all(App.this).execute();
 
         if(!Internet.isNetworkConnection(App.this)){
             //Internet.Error(App.this);
@@ -91,8 +94,8 @@ public class App  extends ActionBarActivity {
             getUserData(); //TODO load in another thread
 
         startUI();
-        if(Internet.isNetworkConnection(App.this))
-            getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
+        if(Internet.isNetworkConnection(App.this)){}
+          // getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
 
     }
 
@@ -342,6 +345,15 @@ public class App  extends ActionBarActivity {
                 editor.putString("AccountPhoto", encodedPhoto);
                 editor.putString("AccountPhotoUrl",MainUser.get(0).photo_100);
                 editor.putLong("AccountId", MainUser.get(0).id);
+                //Log.e("asd",MainUser.get(0).first_name);
+                Account.setAccountData(MainUser.get(0).first_name, MainUser.get(0).last_name,
+                        String.valueOf(MainUser.get(0).id),
+                        encodedPhoto); //Todo change
+                setLocalData();
+                new DB_read_all(App.this).execute();
+                //new DB_read_by_id(String.valueOf(MainUser.get(0).id),App.this).execute();
+
+
                 editor.commit();
 
             }
@@ -349,7 +361,7 @@ public class App  extends ActionBarActivity {
 
     public void getFriends(){
         Log.i("App", "getting friends data");
-        VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
+        VKRequest request = VKApi.friends().getAppUsers(VKParameters.from(VKApiConst.FIELDS,
                 "id,first_name,last_name,photo_100,"));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
@@ -361,7 +373,8 @@ public class App  extends ActionBarActivity {
                         VKList<VKApiUser> Friends = (VKList<VKApiUser>) response.parsedModel;
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
                         SharedPreferences.Editor editor = prefs.edit();
-
+                        if(Friends != null)
+                            if(Friends.size()!= 0)
                         for (int i = 0; i < Friends.size(); ++i) {
                             String photoUrl = Friends.get(i).photo_100;
                             Bitmap photoBm = null;
@@ -386,13 +399,14 @@ public class App  extends ActionBarActivity {
                             byte[] b = baos.toByteArray();
                             String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
 
-                            editor.putString("FriendPhoto"+String.valueOf(i),encodedPhoto);
-                            editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
-                            editor.putString("FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
+                            editor.putString("1FriendPhoto"+String.valueOf(i),encodedPhoto);
+                            editor.putString("1FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
+                            editor.putString("1FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
                             //editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
-                            editor.putLong("FriendId" + String.valueOf(i), Friends.get(i).id);
+                            editor.putLong("1FriendId" + String.valueOf(i), Friends.get(i).id);
                             editor.commit();
                         }
+                        else{Log.e("","Нет друзей");}else{Log.e("","Нет друзей");}
                     }}.start();
             }
         });
@@ -408,6 +422,7 @@ public class App  extends ActionBarActivity {
             if(PhotoEncoded != null) {
                 byte[] asd = PhotoEncoded.getBytes();
                 PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
+                //Account.setAccountData(App.this);
             }
         }
         mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
