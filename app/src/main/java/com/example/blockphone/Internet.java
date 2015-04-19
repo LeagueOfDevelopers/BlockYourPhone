@@ -18,7 +18,7 @@ import java.net.URL;
  */
 public final class Internet {
 
-    public static boolean isNetworkConnection(Context c) {
+    public static boolean isNetworkConnection(Context c) { //Todo upgrade
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
 

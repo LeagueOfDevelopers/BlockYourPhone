@@ -3,9 +3,7 @@ package com.example.blockphone;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -13,7 +11,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,9 +27,9 @@ public class Top  extends ActionBarActivity {
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
     //Для хедера
-    String NAME;
-    int POINTS = Account.Points;
-    byte [] PROFILE_PHOTO = Account.PhotoAsBytes;
+    String NAME = Account.getFullName();
+    int POINTS = Account.getPoints();
+    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
 
     private Toolbar toolbar;
 
@@ -52,7 +49,7 @@ public class Top  extends ActionBarActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top);
-
+        
         startUI();
     }
     private void startUI()
@@ -63,14 +60,7 @@ public class Top  extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Top.this);
 
-        if(prefs!= null) {
-            NAME = prefs.getString("AccountFirstName", null) +" " +  prefs.getString("AccountLastName", null);
-            String PhotoEncoded = prefs.getString("AccountPhoto", null);
-            byte[] asd = PhotoEncoded.getBytes();
-            PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
-        }
         mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
 
         adapter =  new Top_ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);

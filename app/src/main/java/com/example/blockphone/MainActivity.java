@@ -43,7 +43,6 @@ public class MainActivity  extends FragmentActivity {
         if (VKSdk.wakeUpSession()) {
             Log.i("Login", "Starting app");
             startApp();
-            //TODO запись в бд
             finish();
             return;
         }

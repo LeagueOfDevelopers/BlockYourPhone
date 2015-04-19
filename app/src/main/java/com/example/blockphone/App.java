@@ -1,7 +1,7 @@
 package com.example.blockphone;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,35 +40,34 @@ import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import db.DB_create;
 import db.DB_read_all;
-import db.DB_read_by_id;
+import db.VK_Friends;
 
 /**
  * Created by Жамбыл on 26.03.2015.
  */
 public class App  extends ActionBarActivity {
     //Главная
-
+    public static int NumberOfFriend = 0;
+    //public static VKList<VKApiUser> Friends;
     String TITLES[] = {"Блокировка","Рейтинг","Выход"};
     int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
     Button MainBlockButton;
     TextView Text1,Text2;
-    String  dropdown1value, dropdown2value;
-    public static double dropdown1double, dropdown2double;
+    public static String  dropdown1value, dropdown2value;
     Typeface type_thin;
     Typeface type;
     String[] Seconds = new String[] {"1 секунда","2 секунды","3 секунды","4 секунды"};
     String[] Hours = new String[] {"1 час","2 часа","3 часа","4 часа"};
     Spinner dropdown1, dropdown2;
 
-    String NAME = "Name";
-    int POINTS = Account.Points;
-    byte [] PROFILE_PHOTO;
-
+    String NAME = Account.getFullName();
+    int POINTS = Account.getPoints();
+    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
 
     private Toolbar toolbar;
     RecyclerView mRecyclerView;
@@ -86,16 +85,17 @@ public class App  extends ActionBarActivity {
         LockScreenService.isMustBeLocked = false;
         //new DB_read_all(App.this).execute();
 
-
         if(!Internet.isNetworkConnection(App.this)){
             //Internet.Error(App.this);
+            Log.e("App","Restoring Acc data");
+            Account.restore(App.this);
         }
         else
             getUserData(); //TODO load in another thread
 
         startUI();
         if(Internet.isNetworkConnection(App.this)){}
-          // getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
+        //getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
 
     }
 
@@ -122,25 +122,11 @@ public class App  extends ActionBarActivity {
                     Log.e("App","dropdown1 error");
                 }
                 //((TextView) parent.getChildAt(0)).setTypeface(type);
-                switch (dropdown1value) {
-                    case "1 час":
-                        dropdown1double = 1;
-                        break;
-                    case "2 часа":
-                        dropdown1double = 2;
-                        break;
-                    case "3 часа":
-                        dropdown1double = 3;
-                        break;
-                    case "4 часа":
-                        dropdown1double = 4;
-                        break;
-                }
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                //dropdown1value   = "1 ч";
             }
         });
 
@@ -156,21 +142,6 @@ public class App  extends ActionBarActivity {
                     ((TextView) parent.getChildAt(0)).setGravity(Gravity.CENTER);
                 }catch (Exception e){
                     Log.e("App","dropdown2 error ");
-                }
-                //((TextView) parent.getChildAt(0)).setTypeface(type);
-                switch (dropdown2value) {
-                    case "1 секунда":
-                        dropdown2double = 1;
-                        break;
-                    case "2 секунды":
-                        dropdown2double = 2;
-                        break;
-                    case "3 секунды":
-                        dropdown2double = 3;
-                        break;
-                    case "4 секунды":
-                        dropdown2double = 4;
-                        break;
                 }
             }
 
@@ -239,7 +210,6 @@ public class App  extends ActionBarActivity {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
                 View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
-
                 if(child!=null && mGestureDetector.onTouchEvent(motionEvent)){
                     Intent intent = new Intent();
                     Drawer.closeDrawers();
@@ -311,120 +281,49 @@ public class App  extends ActionBarActivity {
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
                 VKList<VKApiUser> MainUser = (VKList<VKApiUser>)response.parsedModel;
-
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
-                SharedPreferences.Editor editor = prefs.edit();
-
+                Log.e("App","Getting user data");
                 String photoUrl = MainUser.get(0).photo_100;
-                Bitmap photoBm = null;
-                if(photoUrl!=null){
-                    String previousUrl =  prefs.getString("AccountPhotoUrl", null);
-                    if(photoUrl!=previousUrl) {
-                        try{
+                if(photoUrl!=null) {
+                    Bitmap photoBm = null;
+                    String previousUrl = null;
+                    if (Account.getPhotoUrl()!= null)
+                        previousUrl = Account.getPhotoUrl();
+                    if (!photoUrl.equals(previousUrl)) {
+                        try {
                             photoBm = Internet.convertUrlToImage(photoUrl);
-                        }
-                        catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             Logger logger = Logger.getAnonymousLogger();
                             logger.log(Level.SEVERE, "an exception was thrown while converting", e);
                         }
                     }
-                }
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                if(photoBm!= null)
-                    photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] b = baos.toByteArray();
-                String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
-                if(!encodedPhoto.equals(null)) {
-                    Log.i("App", "getting user data SUCCESS");
-                    setLocalData();
-                }
 
-                editor.putString("AccountFirstName", MainUser.get(0).first_name);
-                editor.putString("AccountLastName", MainUser.get(0).last_name);
-                editor.putString("AccountPhoto", encodedPhoto);
-                editor.putString("AccountPhotoUrl",MainUser.get(0).photo_100);
-                editor.putLong("AccountId", MainUser.get(0).id);
-                //Log.e("asd",MainUser.get(0).first_name);
-                Account.setAccountData(MainUser.get(0).first_name, MainUser.get(0).last_name,
-                        String.valueOf(MainUser.get(0).id),
-                        encodedPhoto); //Todo change
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    if (photoBm != null)
+                        photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] b = baos.toByteArray();
+                    String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                    if (!encodedPhoto.equals(null)) {
+                        Log.i("App", "getting user data SUCCESS");
+                        setLocalData();
+                    }
+
+                    Account.setAccountData(App.this, MainUser.get(0).first_name, MainUser.get(0).last_name,
+                            String.valueOf(MainUser.get(0).id),
+                            encodedPhoto, MainUser.get(0).photo_100);
+                }
                 setLocalData();
                 new DB_read_all(App.this).execute();
-                //new DB_read_by_id(String.valueOf(MainUser.get(0).id),App.this).execute();
-
-
-                editor.commit();
-
+                new VK_Friends(App.this).execute();
             }
     });}
 
-    public void getFriends(){
-        Log.i("App", "getting friends data");
-        VKRequest request = VKApi.friends().getAppUsers(VKParameters.from(VKApiConst.FIELDS,
-                "id,first_name,last_name,photo_100,"));
-        request.executeWithListener(new VKRequest.VKRequestListener() {
-            @Override
-            public void onComplete(final VKResponse response) {
-                super.onComplete(response);
-                new Thread(){
-                    @Override
-                    public void run() {
-                        VKList<VKApiUser> Friends = (VKList<VKApiUser>) response.parsedModel;
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        if(Friends != null)
-                            if(Friends.size()!= 0)
-                        for (int i = 0; i < Friends.size(); ++i) {
-                            String photoUrl = Friends.get(i).photo_100;
-                            Bitmap photoBm = null;
-                            if(photoUrl!=null){
-                                String previousUrl =  prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
-                                if(photoUrl!=previousUrl) {
-                                    try {
-                                        photoBm = Internet.convertUrlToImage(photoUrl);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Logger logger = Logger.getAnonymousLogger();
-                                        logger.log(Level.SEVERE, "an exception was thrown while converting", e);
-                                    }
-                                }
-                            }
-                            //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            if(photoBm!= null)
-                                photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-
-                            byte[] b = baos.toByteArray();
-                            String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
-
-                            editor.putString("1FriendPhoto"+String.valueOf(i),encodedPhoto);
-                            editor.putString("1FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
-                            editor.putString("1FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
-                            //editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
-                            editor.putLong("1FriendId" + String.valueOf(i), Friends.get(i).id);
-                            editor.commit();
-                        }
-                        else{Log.e("","Нет друзей");}else{Log.e("","Нет друзей");}
-                    }}.start();
-            }
-        });
-
-    }
-
     private void setLocalData(){
         Log.i("App", "Setting Local Data");
-        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(App.this);
-        if(prefs1!= null) {//TODO переделать, вставить в Account
-            NAME = prefs1.getString("AccountFirstName", null) + " "+  prefs1.getString("AccountLastName", null);
-            String PhotoEncoded = prefs1.getString("AccountPhoto", null);
-            if(PhotoEncoded != null) {
-                byte[] asd = PhotoEncoded.getBytes();
-                PROFILE_PHOTO = Base64.decode(asd, Base64.DEFAULT);
-                //Account.setAccountData(App.this);
-            }
-        }
+
+        NAME = Account.getFullName();
+        PROFILE_PHOTO = Account.getPhotoAsBytes();
+        POINTS = Account.getPoints();
+
         mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
         mRecyclerView.setAdapter(mAdapter);
     }

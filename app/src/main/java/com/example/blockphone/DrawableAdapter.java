@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +82,7 @@ public class DrawableAdapter extends RecyclerView.Adapter<DrawableAdapter.ViewHo
 
 
         } else if (viewType == TYPE_HEADER) {
-            Log.e("DrawableAdapter","Setting Header view");
+            //Log.e("DrawableAdapter","Setting Header view");
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.header,parent,false);
             ViewHolder vhHeader = new ViewHolder(v,viewType,context);
             return vhHeader;
@@ -128,13 +127,15 @@ public class DrawableAdapter extends RecyclerView.Adapter<DrawableAdapter.ViewHo
         }
         else{
             if(profile1 == null){
-               // Toast.makeText(context, "Profile1 null", Toast.LENGTH_LONG).show();
             }
             else {
                 holder.profile.setImageBitmap(BitmapFactory.decodeByteArray(profile1, 0, profile1.length));
             }
             holder.Name.setText(name);
-            holder.points.setText(points + " очков");
+            if(points == -1)
+                holder.points.setText("");
+            else
+                holder.points.setText(points + " очков");
             holder.points.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf"));
         }
     }

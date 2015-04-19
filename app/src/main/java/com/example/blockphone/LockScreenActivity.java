@@ -37,7 +37,7 @@ public class LockScreenActivity extends Activity {
     TextView TimeLeft;
     TextView CurrentTime;
     private int longClickDuration = 500;
-    private double longLockDuration = 0;
+    private int longLockDuration = 0;
     private boolean isLongPress = false;
     int progress = 0;
     boolean running;
@@ -59,10 +59,16 @@ public class LockScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lock_screen);
         Log.i("","Lock Screen ON");
-        longClickDuration = (int) App.dropdown2double * 1000;
-        longLockDuration  = App.dropdown1double;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                            |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        String lcd[] = App.dropdown1value.split(" ");
+        String lld[] = App.dropdown2value.split(" ");
+
+        longClickDuration = Integer.valueOf(lcd[0]) * 1000;
+        longLockDuration  = Integer.valueOf(lld[0]);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+          //                  |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 
         //Время
         TimeLeft = (TextView)findViewById(R.id.TimeLeft);
@@ -96,7 +102,7 @@ public class LockScreenActivity extends Activity {
                     pw.incrementProgress();
                     progress++;
                     try {
-                        Thread.sleep((int)longLockDuration * 3600000 / 360 );
+                        Thread.sleep(longClickDuration/360);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -105,8 +111,9 @@ public class LockScreenActivity extends Activity {
                 running = false;
             }
         };
-        Thread s = new Thread(r);
-        s.start();
+        final Thread s = new Thread(r);
+        //s.start();
+
 
         //UnlockText.set
         //UnlockText.setTextColor(Color.WHITE);
@@ -144,8 +151,10 @@ public class LockScreenActivity extends Activity {
                 @Override
                 public boolean onTouch(final View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        if((int)App.dropdown2double != 1)
-                            Unlock.setText("Удерживайте " + String.valueOf((int)App.dropdown2double) + " секунды");
+                        //s.start();
+                        //s.start();
+                        if(longLockDuration != 1)
+                            Unlock.setText("Удерживайте " + String.valueOf(longLockDuration) + " секунды");
                         else
                             Unlock.setText("Удерживайте 1 секунду");
 
@@ -164,6 +173,10 @@ public class LockScreenActivity extends Activity {
                         }, longClickDuration);
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         //longClickDuration = (int)App.dropdown2double*1000;
+                        //pw.
+                        //s.stop();
+                        //s.interrupt();
+                        //pw.resetCount();
                         Unlock.setText("Разблокировать");
                         isLongPress = false;
                     }
