@@ -42,6 +42,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import db.DB_read_all;
+
 /**
  * Created by Жамбыл on 26.03.2015.
  */
@@ -79,6 +81,8 @@ public class App  extends ActionBarActivity {
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
+
+        new DB_read_all(App.this).execute();
 
         if(!Internet.isNetworkConnection(App.this)){
             //Internet.Error(App.this);
@@ -377,7 +381,7 @@ public class App  extends ActionBarActivity {
                             //editor.putString("FriendPhoto" + String.valueOf(i), Friends.get(i).photo_100);
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
                             if(photoBm!= null)
-                            photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                                photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
                             byte[] b = baos.toByteArray();
                             String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
@@ -385,7 +389,7 @@ public class App  extends ActionBarActivity {
                             editor.putString("FriendPhoto"+String.valueOf(i),encodedPhoto);
                             editor.putString("FriendFirstName" + String.valueOf(i), Friends.get(i).first_name);
                             editor.putString("FriendLastName" + String.valueOf(i), Friends.get(i).last_name);
-                            editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
+                            //editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
                             editor.putLong("FriendId" + String.valueOf(i), Friends.get(i).id);
                             editor.commit();
                         }

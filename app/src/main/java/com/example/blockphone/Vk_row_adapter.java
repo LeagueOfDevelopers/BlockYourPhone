@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,8 @@ public class Vk_row_adapter extends SimpleAdapter {
 
         ImageView vt = (ImageView)v.findViewById(R.id.vk_photo);
         byte[] image = (byte[]) results.get(position).get(ATTRIBUTE_NAME_IMAGE);
+        if(image == null)
+            Log.e("Vk_row_adapter","image = null");
         vt.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
 
         return v;
@@ -74,7 +77,8 @@ public class Vk_row_adapter extends SimpleAdapter {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             long  id = 0;
             if(prefs != null){
-                id = prefs.getLong("FriendId" + String.valueOf(position), 0);
+                String idAsString = prefs.getString("UserVkId" + String.valueOf(position), null);
+                id = Long.valueOf(idAsString);
             }
             final long finalId = id;
             new AlertDialog.Builder(context)

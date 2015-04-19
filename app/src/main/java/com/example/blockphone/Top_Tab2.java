@@ -30,7 +30,7 @@ public class Top_Tab2 extends Fragment {
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
-    final int NUMBER_OF_SHOWING_USERS = 10;
+    final int NUMBER_OF_SHOWING_USERS = 6;//TODO change
     List<String> FriendNames =  new ArrayList<String>();
 
     //пока статичные
@@ -87,12 +87,27 @@ public class Top_Tab2 extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++){
             if (prefs != null){
-                FriendNames.add(prefs.getString("FriendFirstName" + String.valueOf(i), null) +
+               FriendNames.add(prefs.getString("UserFirstName" + String.valueOf(i), null) +
+                        " " + prefs.getString("UserLastName" + String.valueOf(i), null));
+                String PhotoEncoded = prefs.getString("UserPhoto"+ String.valueOf(i), null);
+                /*if(PhotoEncoded.equals(null))
+                    Log.e("Top_tab_2","PhotoEncoded = null");
+                else*/
+                   // Log.e("Top_tab_2 PhotoEncoded",PhotoEncoded);
+                byte[] b = PhotoEncoded.getBytes();
+                byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
+                if(PhotoAsBytes == null)
+                    Log.e("Top_tab_2 PhotoAsBytes","PhotoAsBytes = null " + String.valueOf(i));
+                PhotoAsBytesList.add(PhotoAsBytes);
+//////////////////////////////
+     /*           FriendNames.add(prefs.getString("FriendFirstName" + String.valueOf(i), null) +
                           " " + prefs.getString("FriendLastName" + String.valueOf(i), null));
                 String PhotoEncoded = prefs.getString("FriendPhoto"+ String.valueOf(i), null);
+                //Log.e("Tob_tab2",PhotoEncoded);
                 byte[] b = PhotoEncoded.getBytes();
                 byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
                 PhotoAsBytesList.add(PhotoAsBytes);
+*/
             }
         }
         Log.i("Top_Tab2","Loading Friends");
