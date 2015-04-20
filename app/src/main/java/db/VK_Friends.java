@@ -29,8 +29,15 @@ import java.util.logging.Logger;
  */
 public class VK_Friends extends AsyncTask<String, String, String> {
     Context context;
-    public static int NumberOfFriend = 0;
     public static boolean isFriendsReady= false;
+    boolean isReady = false;
+
+    public static List<String> ListOfFName = new ArrayList<String>();
+    public static List<String> ListOfLName = new ArrayList<String>();
+    public static List<String> ListOfVkId = new ArrayList<String>();
+    public static List<String> ListOfPoints = new ArrayList<String>();
+    public static List<String> ListOfEncPhoto = new ArrayList<String>();
+
 
     public  VK_Friends(Context _context){context = _context;}
 
@@ -60,7 +67,6 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                 if(thisPoints!=-2)
                                 {
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                                    SharedPreferences.Editor editor = prefs.edit();
                                     String photoUrl = _Friends.get(i).photo_100;
                                     Bitmap photoBm = null;
                                     if (photoUrl != null) {
@@ -77,23 +83,52 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                     if (photoBm != null)
                                         photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                                    Log.e("Friends",String.valueOf(NumberOfFriend));
                                     byte[] b = baos.toByteArray();
                                     String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                                    ListOfFName.add(_Friends.get(i).first_name);
+                                    ListOfLName.add(_Friends.get(i).last_name);
+                                    ListOfPoints.add(String.valueOf(thisPoints));
+                                    ListOfVkId.add(String.valueOf(_Friends.get(i).id));
+                                    ListOfEncPhoto.add( encodedPhoto);
 
-                                    editor.putString("FriendPhoto" + String.valueOf(NumberOfFriend), encodedPhoto);
-                                    editor.putString("FriendFirstName" + String.valueOf(NumberOfFriend), _Friends.get(i).first_name);
-                                    editor.putString("FriendLastName" + String.valueOf(NumberOfFriend), _Friends.get(i).last_name);
-                                    editor.putString("FriendPoints" + String.valueOf(NumberOfFriend),String.valueOf(thisPoints));
-                                    //editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
-                                    editor.putLong("FriendId" + String.valueOf(NumberOfFriend), _Friends.get(i).id);
-                                    NumberOfFriend++;
-                                    editor.apply();
+                                    if(i ==  _Friends.size() - 1) isReady = true;
+
                                 }
                             }}
                         else{Log.e("","Нет друзей");}}else{Log.e("","Нет друзей");}
             }
         });
+        while(!isReady){
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(int k = 0; k<ListOfFName.size();k++)
+            for(int j = 0; j < ListOfFName.size() - k - 1; j++)
+                if(Integer.valueOf(ListOfPoints.get(j))<Integer.valueOf(ListOfPoints.get(j + 1))){
+                    Collections.swap(ListOfFName, j, j + 1);
+                    Collections.swap(ListOfLName, j, j + 1);
+                    Collections.swap(ListOfPoints, j, j + 1);
+                    Collections.swap(ListOfVkId, j, j + 1);
+                    Collections.swap(ListOfEncPhoto, j, j + 1);
+                }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        for(int k = 0; k<ListOfFName.size();k++) {
+            editor.putString("FriendPhoto" + String.valueOf(k), ListOfEncPhoto.get(k));
+            editor.putString("FriendFirstName" + String.valueOf(k), ListOfFName.get(k));
+            editor.putString("FriendLastName" + String.valueOf(k), ListOfLName.get(k));
+            editor.putString("FriendPoints" + String.valueOf(k), ListOfPoints.get(k));
+            //editor.putString("FriendPhotoUrl" + String.valueOf(i), Friends.get(i).photo_100);
+            editor.putString("FriendVkId" + String.valueOf(k), ListOfVkId.get(k));
+            editor.apply();
+        }
+
         return null;
     }
 }

@@ -108,7 +108,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                     Log.e("Succes getting users, users amount", String.valueOf(users.length()));
 
                     //iters  = users.length()<Top_Tab2.NUMBER_OF_SHOWING_USERS
-                      //      ?users.length():Top_Tab2.NUMBER_OF_SHOWING_USERS;
+                    //      ?users.length():Top_Tab2.NUMBER_OF_SHOWING_USERS;
 
 
                     for (int i = 0; i < users.length(); i++) {
@@ -132,7 +132,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                         ListOfPoints.add(points);
                     }
                 } else {
-                      Log.e("DB_read_all","Db Error!");
+                    Log.e("DB_read_all","Db Error!");
                 }
             } catch (JSONException | UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -160,18 +160,16 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
         new DB_create(context, Account.getFirstName(), Account.getLastName(),
                 Account.getVkId()).execute();
         VK_Friends.isFriendsReady = true;
-        //new App().getFriends(context);
 
         for(int i = 0; i<ListOfFName.size();i++){
             setUserPhotoUrl(ListOfFName.get(i), ListOfLName.get(i), ListOfVkId.get(i), ListOfPoints.get(i));
-            Log.e("first", String.valueOf(i));
-                while (!isReady)
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                isReady = false;
+            while (!isReady)
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            isReady = false;
         }
         return null;
     }
@@ -184,32 +182,30 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
             @Override
             public void onComplete(final VKResponse response) {
                 super.onComplete(response);
-                //Log.e("second", String.valueOf(I));
-                //Log.e("second", String.valueOf(_first_name));
-                        VKList<VKApiUser> User = (VKList<VKApiUser>) response.parsedModel;
-                        if(User.get(0).photo_100!=null)
-                        photo_url = User.get(0).photo_100;
+                VKList<VKApiUser> User = (VKList<VKApiUser>) response.parsedModel;
+                if(User.get(0).photo_100!=null)
+                    photo_url = User.get(0).photo_100;
 
-                        Bitmap photoBm = null;
+                Bitmap photoBm = null;
 
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        if(photo_url !=null){
-                            try {
-                                photoBm = Internet.convertUrlToImage(photo_url);
-                            }
-                            catch (Exception e)
-                            {
-                                Logger logger = Logger.getAnonymousLogger();
-                                logger.log(Level.SEVERE, "an exception was thrown while converting", e);
-                            }
-                        }
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        if(photoBm!= null)
-                            photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = prefs.edit();
+                if(photo_url !=null){
+                    try {
+                        photoBm = Internet.convertUrlToImage(photo_url);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger logger = Logger.getAnonymousLogger();
+                        logger.log(Level.SEVERE, "an exception was thrown while converting", e);
+                    }
+                }
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                if(photoBm!= null)
+                    photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
-                        byte[] b = baos.toByteArray();
-                        String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                byte[] b = baos.toByteArray();
+                String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
 
                 editor.putString("UserFirstName" + String.valueOf(I), _first_name);
                 editor.putString("UserLastName" + String.valueOf(I), _last_name);
@@ -217,7 +213,6 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                 editor.putString("UserPoints" + String.valueOf(I), _points);
                 editor.putString("UserPhoto"+String.valueOf(I),encodedPhoto);
                 editor.apply();
-                Log.e("second", String.valueOf(I));
                 if(I == users.length() - 1){
                     Log.e("DB_read_all","Success");
                 }
@@ -227,10 +222,11 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
 
             @Override
             public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
-            Log.e("","Я старался");
+                Log.e("","Я старался");
             } });
 
     }
 }
+
 
 

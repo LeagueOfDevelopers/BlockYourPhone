@@ -83,10 +83,8 @@ public class App  extends ActionBarActivity {
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
-        //new DB_read_all(App.this).execute();
 
         if(!Internet.isNetworkConnection(App.this)){
-            //Internet.Error(App.this);
             Log.e("App","Restoring Acc data");
             Account.restore(App.this);
         }
@@ -94,7 +92,7 @@ public class App  extends ActionBarActivity {
             getUserData(); //TODO load in another thread
 
         startUI();
-        if(Internet.isNetworkConnection(App.this)){}
+        //if(Internet.isNetworkConnection(App.this)){}
         //getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
 
     }

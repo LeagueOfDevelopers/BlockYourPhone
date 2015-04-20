@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Created by Жамбыл on 05.04.2015.
  */
-public class Vk_row_adapter2 extends SimpleAdapter {
+public class Vk_row_adapter extends SimpleAdapter {
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
@@ -35,12 +35,14 @@ public class Vk_row_adapter2 extends SimpleAdapter {
     LinearLayout LL;
     LinearLayout LL2;
     TextView currentText;
+    int Tab;
 
-    public Vk_row_adapter2(Context _context, List<? extends Map<String, ?>> data, int _resource, String[] from, int[] to) {
+    public Vk_row_adapter(Context _context, List<? extends Map<String, ?>> data, int _resource, String[] from, int[] to,int _Tab) {
         super(_context, data, _resource, from, to);
         this.results = data;
         context = _context;
         resource = _resource;
+        Tab = _Tab;
     }
     @Override
     public View getView(int position, View view, ViewGroup parent){
@@ -48,7 +50,7 @@ public class Vk_row_adapter2 extends SimpleAdapter {
         View v = inflater.inflate(resource, parent, false); //vk_row.xml
         LL = (LinearLayout)v.getRootView();
         LL.setTag(position);
-        LL.setOnLongClickListener(onButtonClickListener);
+        LL.setOnLongClickListener(onButtonClickListener2);
         tt = (TextView) v.findViewById(R.id.vk_name);
         tt.setText((CharSequence) results.get(position).get(ATTRIBUTE_NAME_TEXT_NAME));
         TextView bt = (TextView) v.findViewById(R.id.vk_raiting);
@@ -62,7 +64,7 @@ public class Vk_row_adapter2 extends SimpleAdapter {
         vt.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         return v;
     }
-    private View.OnLongClickListener onButtonClickListener = new View.OnLongClickListener()
+    private View.OnLongClickListener onButtonClickListener2= new View.OnLongClickListener()
     {
         @Override
         public boolean onLongClick(View view) {
@@ -72,14 +74,20 @@ public class Vk_row_adapter2 extends SimpleAdapter {
             currentText = (TextView)LL2.getChildAt(0);
             String currentName = (String) currentText.getText();
 
-            int position=(Integer) LL.getTag();
+            int position = (Integer) LL.getTag();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            long  id = 0;
-            if(prefs != null){
-                String idAsString = prefs.getString("UserVkId" + String.valueOf(position), null);
-                id = Long.valueOf(idAsString);
+            String idAsString = null;
+            if(prefs != null) {
+                switch (Tab) {
+                    case 1:
+                        idAsString = prefs.getString("FriendVkId" + String.valueOf(position), null);
+                        break;
+                    case 2:
+                        idAsString = prefs.getString("UserVkId" + String.valueOf(position), null);
+                        break;
+                }
             }
-            final long finalId = id;
+            final long finalId = Long.valueOf(idAsString);
             new AlertDialog.Builder(context)
                     .setTitle(currentName)
                     .setMessage("Перейти на страницу Вконтакте?")

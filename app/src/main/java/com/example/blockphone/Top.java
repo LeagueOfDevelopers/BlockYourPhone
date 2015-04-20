@@ -49,7 +49,7 @@ public class Top  extends ActionBarActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top);
-        
+
         startUI();
     }
     private void startUI()

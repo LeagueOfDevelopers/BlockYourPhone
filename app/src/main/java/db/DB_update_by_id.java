@@ -37,7 +37,6 @@ public final class DB_update_by_id extends AsyncTask<String, String, String> {
             points = _points;
             context = _context;
             url_update_by_id += "?id=" + vk_id + "&points=" + points;
-            //Log.e("DB_update_by_id",url_update_by_id);
         }
         else
             Log.e("DB_update_by_id","NullPointerException");

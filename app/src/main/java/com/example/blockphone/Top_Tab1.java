@@ -1,5 +1,6 @@
 package com.example.blockphone;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +31,6 @@ import com.vk.sdk.api.model.VKAttachments;
 import com.vk.sdk.api.model.VKWallPostResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,47 +44,59 @@ public final class Top_Tab1 extends Fragment {
     TextView NoFriendsText;
     Typeface type_thin;
     Boolean isPosted = false;
-    //Данные для вк_адаптера
+    Boolean isReady = false;
+
     final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
     final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
     final int NUMBER_OF_SHOWING_USERS = 10;//TODO change
 
-
     List<String> FriendNames =  new ArrayList<String>();
     List<String> PointsList = new ArrayList<String>();
     List<byte[]>PhotoAsBytesList = new ArrayList<byte[]>();
 
-
-
-    // массив имен атрибутов, из которых будут читаться данные
     String[] from = {ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_PLACE,
             ATTRIBUTE_NAME_IMAGE };
-    // массив ID View-компонентов, в которые будут вставлять данные
     int[] to = { R.id.vk_name, R.id.vk_raiting, R.id.vk_photo };
-    Vk_row_adapter2  sAdapter1;
-
-    //Дата, куда пакуем
-        ArrayList<Map<String, Object>> data;
-        Map<String, Object> m;
-
-
+    Vk_row_adapter sAdapter1;
+    View _v;
+    ArrayList<Map<String, Object>> data;
+    Map<String, Object> m;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.top_tab_1,container,false);
+        _v = v;
+        Thread thread1 = new Thread() {
+            @Override
+            public void run() {
+                LoadFriends(getActivity());
+            }
+        };
 
+        thread1.start();
 
-        LoadFriends(getActivity());
         StartUI(v);
         //проверяем на наличие друзей
-        if(FriendNames != null & !FriendNames.isEmpty()){
-            Log.e("Friendsize",String.valueOf(FriendNames.size()));
-            Log.e("Friendsize",String.valueOf(FriendNames.get(0)));
+        if(!(FriendNames != null && FriendNames.isEmpty())){
             data  = new ArrayList<Map<String, Object>>(FriendNames.size());
-            //пакуем и отправляем
-            PackAndSendData(v);
-            //StartUI(v);
+
+            Thread thread = new Thread() {
+                public void run() {
+                        try {
+                            if(!isReady) Thread.sleep(300);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    PackAndSendData(_v);
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        }
+            };
+            thread.start();
         }
         else {
             PostToWallButton.setVisibility(View.VISIBLE);
@@ -94,36 +105,30 @@ public final class Top_Tab1 extends Fragment {
         return v;
     }
 
-    //Пакуем и отправляем дату
     private void PackAndSendData(View v)
     {
         Log.e("Top_Tab1", "Packing Data");
-        for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++) {
+        for(int i=0;i<FriendNames.size(); i++) {
             m = new HashMap<String, Object>();
             m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
             m.put(ATTRIBUTE_NAME_TEXT_PLACE,PointsList.get(i));
             m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
-
             data.add(m);
         }
-        // создаем адаптер
-
 
         VkRowListView1 = (ListView) v.findViewById(R.id.VkRowListView1);
-        //Log.e("PLACE",String.valueOf(data.get(0).get(ATTRIBUTE_NAME_TEXT_PLACE)));
-        MapComparator(data);
-        sAdapter1 = new Vk_row_adapter2(getActivity(), data, R.layout.vk_row,
-                from, to);
+        sAdapter1 = new Vk_row_adapter(getActivity(), data, R.layout.vk_row,
+                from, to,1);
         VkRowListView1.setAdapter(sAdapter1);
     }
 
     public void LoadFriends(Context context){
         //TODO Progress dialog
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++){
             if (prefs != null){
-                String str = prefs.getString("FriendFirstName" + String.valueOf(i), null);
-               // Log.e("Name ", str);
+                String str = prefs.getString("FriendPhoto" + String.valueOf(i), null);
                 if(str != null && !str.isEmpty()) {
                     FriendNames.add(prefs.getString("FriendFirstName" + String.valueOf(i), null) +
                             " " + prefs.getString("FriendLastName" + String.valueOf(i), null));
@@ -137,22 +142,10 @@ public final class Top_Tab1 extends Fragment {
                 }
             }
         }
+        isReady = true;
         Log.e("Top_Tab1","Loading Friends");
     }
-    private void MapComparator(ArrayList<Map<String, Object>> input){
-        for(int i = 0; i<input.size();i++)
-            for(int j = 0; j < input.size() - i - 1; j++)
-                if(Integer.valueOf((String) input.get(j).get(ATTRIBUTE_NAME_TEXT_PLACE))
-                        <Integer.valueOf((String) input.get(j+1).get(ATTRIBUTE_NAME_TEXT_PLACE))) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    Collections.swap(input, j, j + 1);
-                    String buf = prefs.getString("UserVkId" + String.valueOf(j), null);
-                    editor.putString("UserVkId" + String.valueOf(j),prefs.getString("UserVkId" + String.valueOf(j+1), null));
-                    editor.putString("UserVkId" + String.valueOf(j+1),buf);
-                    editor.apply();
-                }
-    }
+
     private void StartUI(View v)
     {
         type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
@@ -209,10 +202,4 @@ public final class Top_Tab1 extends Fragment {
             }
         });
     }}
-    private void showError(VKError error) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(error.errorMessage)
-                .setPositiveButton("OK", null)
-                .show();
-    }
 }
