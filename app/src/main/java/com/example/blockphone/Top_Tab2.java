@@ -32,7 +32,7 @@ public final class Top_Tab2 extends Fragment {
     final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
     final String ATTRIBUTE_NAME_IMAGE = "image";
     final String ATTRIBUTE_NAME_VKID = "vk_id";
-    public static final int NUMBER_OF_SHOWING_USERS = 11;//TODO change
+    public static final int NUMBER_OF_SHOWING_USERS = 12;//TODO change
     View _v;
 
     List<String> FriendNames =  new ArrayList<String>();

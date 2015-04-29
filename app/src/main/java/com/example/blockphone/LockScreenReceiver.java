@@ -12,14 +12,6 @@ public class LockScreenReceiver extends BroadcastReceiver  {
     public void onReceive(Context context, Intent intent) {
        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ) { // TODO Заблокировать
             //Toast.makeText(context, "" + "screeen off", Toast.LENGTH_SHORT).show();
-           /* if(!LockScreenService.isMustBeLocked){
-                    Log.i("Receiver","Not must be locked");
-                try {
-                    LockScreenReceiver.this.wait(); // ERROR
-                } catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-            }*/
 
 /*
             wasScreenOn=false;
@@ -28,11 +20,20 @@ public class LockScreenReceiver extends BroadcastReceiver  {
             context.startActivity(intent11);
 */
            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+           if(!LockScreenService.isMustBeLocked){
+               Log.i("Receiver", "Not must be locked");
+               try {
+                   this.abortBroadcast();
+               } catch (Throwable throwable) {
+                   throwable.printStackTrace();
+               }
+           }
 
-            wasScreenOn=true;
-            Intent intent11 = new Intent(context,LockScreenActivity.class);
+
+            //wasScreenOn=true;
+            /*Intent intent11 = new Intent(context,LockScreenActivity.class);
             intent11.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //context.startActivity(intent11);
+            //context.startActivity(intent11);*/
             //Toast.makeText(context, "" + "start activity", Toast.LENGTH_SHORT).show();
 
             // wasScreenOn = true;

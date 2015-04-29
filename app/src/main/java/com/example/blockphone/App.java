@@ -89,11 +89,9 @@ public class App  extends ActionBarActivity {
             Account.restore(App.this);
         }
         else
-            getUserData(); //TODO load in another thread
+            getUserData();
 
         startUI();
-        //if(Internet.isNetworkConnection(App.this)){}
-        //getFriends(); //TODO load  in another thread // Ошибка при медленном интернете
 
     }
 
@@ -227,6 +225,7 @@ public class App  extends ActionBarActivity {
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface arg0, int arg1) {
                                                     VKSdk.logout();
+                                                    VK_Friends.wipeFriendsData(App.this);
                                                     startActivity(new Intent(App.this, MainActivity.class));
                                                     Log.i("App", "Logining out");
                                                     finish();
@@ -252,6 +251,7 @@ public class App  extends ActionBarActivity {
            Lock();
         }};
     private void Lock(){
+        startService(new Intent(this,LockScreenService.class));
         LockScreenService.isMustBeLocked = true;
         startActivity(new Intent(App.this, LockScreenActivity.class));
     }
@@ -278,13 +278,13 @@ public class App  extends ActionBarActivity {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-                VKList<VKApiUser> MainUser = (VKList<VKApiUser>)response.parsedModel;
-                Log.e("App","Getting user data");
+                VKList<VKApiUser> MainUser = (VKList<VKApiUser>) response.parsedModel;
+                Log.e("App", "Getting user data");
                 String photoUrl = MainUser.get(0).photo_100;
-                if(photoUrl!=null) {
+                if (photoUrl != null) {
                     Bitmap photoBm = null;
                     String previousUrl = null;
-                    if (Account.getPhotoUrl()!= null)
+                    if (Account.getPhotoUrl() != null)
                         previousUrl = Account.getPhotoUrl();
                     if (!photoUrl.equals(previousUrl)) {
                         try {
@@ -313,7 +313,7 @@ public class App  extends ActionBarActivity {
                 new DB_read_all(App.this).execute();
                 new VK_Friends(App.this).execute();
             }
-    });}
+        });}
 
     private void setLocalData(){
         Log.i("App", "Setting Local Data");
@@ -326,7 +326,7 @@ public class App  extends ActionBarActivity {
         mRecyclerView.setAdapter(mAdapter);
     }
     @Override
-    public void onBackPressed() {
+    public void onBackPressed(){
         new AlertDialog.Builder(this)
                 .setTitle("Выход")
                 .setMessage("Вы уверены, что хотите выйти?")

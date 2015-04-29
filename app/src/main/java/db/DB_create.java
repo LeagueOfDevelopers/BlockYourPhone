@@ -30,8 +30,6 @@ public final class DB_create extends AsyncTask<String, String, String> {
     String vk_id;
     String points;
 
-
-
     JSONParser jParser = new JSONParser();
 
     public DB_create(Context _context, String _first_name, String _last_name,

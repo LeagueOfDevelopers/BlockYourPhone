@@ -26,19 +26,20 @@ public class LockScreenService extends Service{
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         if(isMustBeLocked) {
             KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-            k1 = km.newKeyguardLock("IN");
-            k1.disableKeyguard();
+            //k1 = km.newKeyguardLock("IN");
+            //k1.disableKeyguard();
 
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
 
             mReceiver = new LockScreenReceiver();
-            registerReceiver(mReceiver, filter);
+            //registerReceiver(mReceiver, filter);
+
             super.onCreate();
 
         }
         else{
-            Log.e("","TEST");
+            Log.e("LockScreenService","TEST");
         }
 
     }
@@ -64,7 +65,7 @@ public class LockScreenService extends Service{
         if(mReceiver!=null) {
             unregisterReceiver(mReceiver);
             Log.e("","TEST destroy");
-        }
+        }Log.e("","TEST destroying");
         super.onDestroy();
     }
 }

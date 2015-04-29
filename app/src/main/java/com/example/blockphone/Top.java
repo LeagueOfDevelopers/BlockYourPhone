@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 
 import com.vk.sdk.VKSdk;
 
+import db.VK_Friends;
+
 /**
  * Created by Жамбыл on 27.03.2015.
  */
@@ -119,6 +121,7 @@ public class Top  extends ActionBarActivity {
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface arg0, int arg1) {
                                                     VKSdk.logout();
+                                                    VK_Friends.wipeFriendsData(Top.this);
                                                     startActivity(new Intent(Top.this, MainActivity.class));
                                                     finish();
                                                 }

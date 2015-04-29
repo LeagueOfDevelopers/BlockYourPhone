@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class StartLockScreen extends Activity {
+public class LockScreenStart extends Activity {
     /*	 KeyguardManager.KeyguardLock k1;
          public void onAttachedToWindow() {
                 // TODO Auto-generated method stub

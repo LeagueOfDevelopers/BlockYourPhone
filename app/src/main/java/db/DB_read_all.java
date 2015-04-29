@@ -119,6 +119,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                         String s = new String(first_name.getBytes("ISO-8859-1"), "Windows-1251");
                         first_name = new String(("\uFEFF" + s).getBytes("UTF-8"));
                         ListOfFName.add(first_name);
+                        //Log.e("test",first_name);
 
                         last_name = c.getString(TAG_LAST_NAME);   //
                         String l = new String(last_name.getBytes("ISO-8859-1"), "Windows-1251");
@@ -166,6 +167,8 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
             while (!isReady)
                 try {
                     Thread.sleep(50);
+                    //todo change
+                    //Log.e("DB_read_all","Sleeping");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

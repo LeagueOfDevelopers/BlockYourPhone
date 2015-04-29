@@ -44,10 +44,10 @@ public class LockScreenActivity extends Activity {
     LayoutParams layoutParams;
     ProgressWheel pw;
 
-    /*
+/*
     @Override
     public void onAttachedToWindow() {
-        this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+        //this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         super.onAttachedToWindow();
     }/*
     @Override
@@ -65,12 +65,14 @@ public class LockScreenActivity extends Activity {
         longClickDuration = Integer.valueOf(lcd[0]) * 1000;
         longLockDuration  = Integer.valueOf(lld[0]);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
           //                  |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 
-        //Время
+        /*
+            Время
+         */
         TimeLeft = (TextView)findViewById(R.id.TimeLeft);
         TimeLeft.setTextColor(Color.WHITE);
 
@@ -133,17 +135,17 @@ public class LockScreenActivity extends Activity {
             TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
             telephonyManager.listen(phoneStateListener,PhoneStateListener.LISTEN_CALL_STATE);
 
-            windowwidth=getWindowManager().getDefaultDisplay().getWidth();
+          //  windowwidth=getWindowManager().getDefaultDisplay().getWidth();
             //System.out.println("windowwidth"+windowwidth);
-            windowheight=getWindowManager().getDefaultDisplay().getHeight();
+           /// windowheight=getWindowManager().getDefaultDisplay().getHeight();
             //System.out.println("windowheight"+windowheight);
 
-            MarginLayoutParams marginParams2 = new MarginLayoutParams(Unlock.getLayoutParams());
+           // MarginLayoutParams marginParams2 = new MarginLayoutParams(Unlock.getLayoutParams());
 
-            marginParams2.setMargins((windowwidth/24)*10,((windowheight/32)*8),0,0);
+           // marginParams2.setMargins((windowwidth/24)*10,((windowheight/32)*8),0,0);
 
             //marginParams2.setMargins(((windowwidth-droid.getWidth())/2),((windowheight/32)*8),0,0);
-            RelativeLayout.LayoutParams layoutdroid = new RelativeLayout.LayoutParams(marginParams2);
+            //RelativeLayout.LayoutParams layoutdroid = new RelativeLayout.LayoutParams(marginParams2);
 
             //Unlock.setLayoutParams(layoutdroid);
 
@@ -167,7 +169,7 @@ public class LockScreenActivity extends Activity {
                                     //TODO вибрацию сделать
                                     //Vibrator vibrator = (Vibrator) LockScreen.this.getSystemService(Context.VIBRATOR_SERVICE);
                                     //vibrator.vibrate(100);
-                                     Unlock();
+                                    Unlock();
                                 }
                             }
                         }, longClickDuration);
@@ -286,7 +288,7 @@ public class LockScreenActivity extends Activity {
                     break;
             }
         }
-    };
+    }/*
     public void onSlideTouch( View view, MotionEvent event )
     {
         switch(event.getAction())
@@ -309,7 +311,7 @@ public class LockScreenActivity extends Activity {
                 break;
         }
     }
-
+*/
     @Override
     public void onBackPressed() {
         // Don't allow back to dismiss.

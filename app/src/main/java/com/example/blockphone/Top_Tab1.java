@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import db.VK_Friends;
+
 /**
  * Created by Жамбыл on 29.03.2015.
  */
@@ -77,24 +79,24 @@ public final class Top_Tab1 extends Fragment {
         thread1.start();
 
         StartUI(v);
-        //проверяем на наличие друзей
-        if(!(FriendNames != null && FriendNames.isEmpty())){
-            data  = new ArrayList<Map<String, Object>>(FriendNames.size());
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if(prefs.getBoolean("hasFriends",false)){
+            data  = new ArrayList<Map<String, Object>>(FriendNames.size());
             Thread thread = new Thread() {
                 public void run() {
-                        try {
-                            if(!isReady) Thread.sleep(300);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    PackAndSendData(_v);
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        }
+                    try {
+                        if (!isReady) Thread.sleep(300);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                PackAndSendData(_v);
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             };
             thread.start();
         }

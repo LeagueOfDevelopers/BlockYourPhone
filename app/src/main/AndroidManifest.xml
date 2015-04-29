@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="Android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         tools:replace="android:icon,android:theme"
@@ -22,7 +23,7 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name="com.example.blockphone.StartLockScreen"
+            android:name="com.example.blockphone.LockScreenStart"
             >
         </activity>
 
