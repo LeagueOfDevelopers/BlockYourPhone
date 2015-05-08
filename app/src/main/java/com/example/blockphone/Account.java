@@ -49,14 +49,15 @@ public class Account {
         }
     }
 
-    public static void restore(Context context) {
+    public static void restore(Context context,boolean safe) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs != null) {
             FirstName = prefs.getString("AccountFirstName", null);
             LastName = prefs.getString("AccountLastName", null);
             VkId = prefs.getString("AccountId", null);
             Points = prefs.getInt("AccountPoints", 0);
-            PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto",null).getBytes(), Base64.DEFAULT);
+            if(!safe)
+                PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto",null).getBytes(), Base64.DEFAULT);
 
         }
     }

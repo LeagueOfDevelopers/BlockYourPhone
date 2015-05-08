@@ -1,12 +1,16 @@
 package com.example.blockphone;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +26,8 @@ import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -77,6 +83,9 @@ public class App  extends ActionBarActivity {
     LinearLayout layoutFromRecycler;
     ActionBarDrawerToggle mDrawerToggle;
 
+    private static KeyguardManager.KeyguardLock kl;
+    private static KeyguardManager km;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,11 +93,15 @@ public class App  extends ActionBarActivity {
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
 
+        km = ((KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE));
+        kl = km.newKeyguardLock(getPackageName());
+
         if(!Internet.isNetworkConnection(App.this)){
             Log.e("App","Restoring Acc data");
-            Account.restore(App.this);
+            Account.restore(App.this,false);
         }
         else
+            Account.restore(App.this,true);
             getUserData();
 
         startUI();
@@ -103,6 +116,7 @@ public class App  extends ActionBarActivity {
         dropdown2 = (Spinner)findViewById(R.id.dropdown2);
         dropdown1.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
         dropdown2.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
+
         dropdown1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -113,9 +127,8 @@ public class App  extends ActionBarActivity {
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
                     ((TextView) parent.getChildAt(0)).setTextSize(20);
                     ((TextView) parent.getChildAt(0)).setGravity(Gravity.CENTER);
-                }
-                catch (Exception e){
-                    Log.e("App","dropdown1 error");
+                } catch (Exception e) {
+                    Log.e("App", "dropdown1 error");
                 }
                 //((TextView) parent.getChildAt(0)).setTypeface(type);
 
@@ -125,7 +138,6 @@ public class App  extends ActionBarActivity {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
-
         dropdown2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -140,7 +152,6 @@ public class App  extends ActionBarActivity {
                     Log.e("App","dropdown2 error ");
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
@@ -248,15 +259,36 @@ public class App  extends ActionBarActivity {
         @Override
         public void onClick(View view) {
            //THE MAIN FUNCTIONALITY
+/*
+            startService(new Intent(App.this,LockScreenService.class));
+            LockScreenService.isMustBeLocked = true;
+            String packageName = "com.android.launcher";
+            String packageClass = "com.android.launcher2.Launcher";
+
+            Intent home_intent = new Intent(Intent.ACTION_MAIN);
+            home_intent.addCategory(Intent.CATEGORY_HOME);
+            home_intent.setComponent(new ComponentName(packageName, packageClass));
+            home_intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
+        /* Here you should catch the exception when the launcher has been uninstalled,
+           and let the user save themselves by opening the Market or an app list or something.
+           Users sometimes use root apps to uninstall the system launcher, so your fake launcher
+           is all that is left. Might as well give the poor user a hand. */
+//            startActivity(home_intent);
            Lock();
         }};
     private void Lock(){
-        startService(new Intent(this,LockScreenService.class));
+        kl.disableKeyguard();
+        startService(new Intent(this, LockScreenService.class));
         LockScreenService.isMustBeLocked = true;
-        startActivity(new Intent(App.this, LockScreenActivity.class));
+        Intent localIntent = new Intent(this, LockScreenActivity.class);
+        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        localIntent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
+        startActivity(localIntent);
     }
     @Override
     protected void onResume() {
+        kl.reenableKeyguard();
         Log.i("App","onResume");
         LockScreenService.isMustBeLocked = false;
         super.onResume();

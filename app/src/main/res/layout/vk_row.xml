@@ -11,13 +11,14 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="108dp"
-        android:layout_height="150dp">
+        android:layout_width="94dp"
+        android:layout_height="match_parent">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_marginTop="7dp"
-            android:layout_height="70dp"
+            android:layout_height="fill_parent"
             android:layout_marginLeft="16dp"
+            android:layout_marginEnd="7dp"
             android:id="@+id/vk_photo"
             />
         </LinearLayout>

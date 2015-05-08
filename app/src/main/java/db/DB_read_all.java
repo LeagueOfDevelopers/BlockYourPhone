@@ -119,7 +119,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                         String s = new String(first_name.getBytes("ISO-8859-1"), "Windows-1251");
                         first_name = new String(("\uFEFF" + s).getBytes("UTF-8"));
                         ListOfFName.add(first_name);
-                        //Log.e("test",first_name);
+                        Log.e("DB_read_all",first_name);
 
                         last_name = c.getString(TAG_LAST_NAME);   //
                         String l = new String(last_name.getBytes("ISO-8859-1"), "Windows-1251");
@@ -161,7 +161,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
         new DB_create(context, Account.getFirstName(), Account.getLastName(),
                 Account.getVkId()).execute();
         VK_Friends.isFriendsReady = true;
-
+        /*
         for(int i = 0; i<ListOfFName.size();i++){
             setUserPhotoUrl(ListOfFName.get(i), ListOfLName.get(i), ListOfVkId.get(i), ListOfPoints.get(i));
             while (!isReady)
@@ -174,6 +174,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                 }
             isReady = false;
         }
+        */
         return null;
     }
     private void setUserPhotoUrl(final String _first_name,

@@ -65,6 +65,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                 int thisPoints = -3;
                                 thisPoints = DB_read_all.searchPoints(String.valueOf(_Friends.get(i).id));
                                 if (thisPoints != -2) {
+                                    Log.e("VK_Friends",_Friends.get(i).first_name);
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                                     SharedPreferences.Editor editor = prefs.edit();
                                     editor.putBoolean("hasFriends", true);
@@ -77,7 +78,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                         String previousUrl = prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
                                         if (!photoUrl.equals(previousUrl)) {
                                             try {
-                                                photoBm = Internet.convertUrlToImage(photoUrl);
+                                                //photoBm = Internet.convertUrlToImage(photoUrl);
                                             } catch (Exception e) {
                                                 Logger logger = Logger.getAnonymousLogger();
                                                 logger.log(Level.SEVERE, "an exception was thrown while converting", e);
@@ -96,11 +97,10 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     ListOfEncPhoto.add(encodedPhoto);
 
                                 }
+                                //todo Херня
                                 //Log.e("VK_Friends",String.valueOf(i));
                                 if (i == _Friends.size() - 1) {
                                     isReady = true;
-                                    Log.e("VK_Friends", "DONE");
-
                                 }
                             }
                             //
@@ -127,6 +127,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                 editor.putString("FriendVkId" + String.valueOf(k), ListOfVkId.get(k));
                                 editor.apply();
                             }
+                            Log.e("VK_Friends","Success");
                         }
                         else{Log.e("","Нет друзей");}}else{Log.e("","Нет друзей");}
             }
