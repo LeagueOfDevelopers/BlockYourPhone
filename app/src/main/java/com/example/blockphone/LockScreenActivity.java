@@ -2,11 +2,20 @@ package com.example.blockphone;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -14,6 +23,7 @@ import android.os.PowerManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -50,8 +60,8 @@ public class LockScreenActivity extends Activity {
     LayoutParams layoutParams;
     ProgressWheel pw;
     WindowManager wm;
-    Button unlocktest;
-
+    ViewGroup mTopView;
+    WindowManager.LayoutParams params;
     /*
     @Override
     public void onAttachedToWindow() {
@@ -65,80 +75,75 @@ public class LockScreenActivity extends Activity {
     }*/
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lock_screen);
+        setContentView(R.layout.lock_screen_container);
         Log.i("","Lock Screen ON");
         String lcd[] = App.dropdown1value.split(" ");
         String lld[] = App.dropdown2value.split(" ");
-        unlocktest = (Button)findViewById(R.id.unlocktest);
-        unlocktest.setOnClickListener(test);
         longClickDuration = Integer.valueOf(lcd[0]) * 1000;
         longLockDuration  = Integer.valueOf(lld[0]);
 
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        Paint paint = new Paint();
+        ColorFilter filter = new ColorMatrixColorFilter(cm);
 
+// ... prepare a color filter
+        filter = new PorterDuffColorFilter(Color.rgb(34, 136, 201), PorterDuff.Mode.OVERLAY);
 
-        /* decorView = getWindow().getDecorView();
-        // Hide both the navigation bar and the status bar.
-        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
-        // a general rule, you should design your app to hide the status bar whenever you
-        // hide the navigation bar.
-
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN ;
-        decorView.setSystemUiVisibility(uiOptions);
-        */
-/*
-        Window window = getWindow();
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-*/
-        /*
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View oView = layoutInflater.inflate(R.layout.lock_screen, null);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                PixelFormat.TRANSLUCENT);
-        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        wm.addView(oView, params);
-        wm.updateViewLayout(oView,params);
-*/
         //////////////////////////////////////////////////////////////////////////////////
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.FILL_PARENT,
-                WindowManager.LayoutParams.FILL_PARENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT ,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN ,
-                PixelFormat.RGB_888);
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_ERROR ,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+              | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+              | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
 
-         wm = (WindowManager) getApplicationContext()
+
+        wm = (WindowManager) getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
 
-        ViewGroup mTopView = (ViewGroup) getLayoutInflater().inflate(R.layout.lock_screen, null);
+        mTopView = (ViewGroup) getLayoutInflater().inflate(R.layout.lock_screen, null);
         getWindow().setAttributes(params);
         wm.addView(mTopView, params);
-        /////////////////////////////////////////////////////////////////////////////////
-
-
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-          //                  |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 
         /*
-            Время
+            0 - Progress Wheel
+            1 - Round Text View
+            2 - Upper TextView
+            3 - Downer TextView  - TimeLeft
+            4 - Test Button
          */
-        TimeLeft = (TextView)findViewById(R.id.TimeLeft);
+
+        /////////////////////////////////////////////////////////////////////////////////
+
+        WallpaperManager myWallpaperManager = WallpaperManager
+                .getInstance(getApplicationContext());
+
+        //background
+        RelativeLayout parentLayout = (RelativeLayout) mTopView.getChildAt(3).getParent();
+        Drawable myDrawable = myWallpaperManager.getDrawable();
+        myDrawable.setAlpha(100);
+        //parentLayout.setBackground(myDrawable);
+        parentLayout.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
+
+
+        //nav bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+        //window.setStatusBarColor(Color.BLACK);
+
+
+        TimeLeft = (TextView) mTopView.getChildAt(3);
         TimeLeft.setTextColor(Color.WHITE);
 
-        CurrentTime = (TextView)findViewById(R.id.CurrentTime);
+        CurrentTime = (TextView) mTopView.getChildAt(2);
         CurrentTime.setTextColor(Color.WHITE);
 
-        Unlock = (TextView)findViewById(R.id.Unlock);
+        Unlock = (TextView) mTopView.getChildAt(1);
         Unlock.setText("Разблокировать");
 
 
@@ -147,8 +152,7 @@ public class LockScreenActivity extends Activity {
         myThread= new Thread(myRunnableThread);
         myThread.start();
 
-
-        pw = (ProgressWheel) findViewById(R.id.pw_spinner);
+        pw = (ProgressWheel) mTopView.getChildAt(0);
         progress = 0;
         //pw.setW
         //pw.setContourSize(0);
@@ -180,16 +184,12 @@ public class LockScreenActivity extends Activity {
         //UnlockText.setTextColor(Color.WHITE);
 
         if(getIntent () !=null&&getIntent().hasExtra (" kill")&&getIntent().getExtras().getInt("kill")==1){
-            //Toast.makeText(this, "" + "kill activityy", Toast.LENGTH_SHORT).show();
             finish();
         }
 
         try{
             startService(new Intent(this,LockScreenService.class));
 
-          /*KeyguardManager km =(KeyguardManager)getSystemService(KEYGUARD_SERVICE);
-            k1 = km.newKeyguardLock("IN");
-            k1.disableKeyguard();*/
             StateListener phoneStateListener = new StateListener();
             TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
             telephonyManager.listen(phoneStateListener,PhoneStateListener.LISTEN_CALL_STATE);
@@ -248,26 +248,16 @@ public class LockScreenActivity extends Activity {
             // TODO: handle exception
         }
     }
-    View.OnClickListener test = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View view) {
-            Unlock();
-        }};
-    /*
+
     //new
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
-    }*/
+        if (!hasFocus) {
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+        }
+    }
     public void setTime() {
         runOnUiThread(new Runnable() {
             public void run() {
@@ -282,16 +272,19 @@ public class LockScreenActivity extends Activity {
                         curTime = String.valueOf(hours) + ":" + thisminutes;}
                     else
                         curTime = hours + ":" + minutes;
+                    wm.updateViewLayout(mTopView,params);
                     CurrentTime.setText(curTime);
                 }catch (Exception e) {}
             }
         });
     }
     private void Unlock(){
-        //((KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE)).newKeyguardLock("IN").reenableKeyguard();
-        //LockScreenReceiver.unlocked = true;
         progress = 0;
+        if(mTopView!=null && wm!=null & mTopView.isShown()) {
+            wm.removeView(mTopView);
+        }
         Log.e("","Lock Screen OFF");
+        App.reenable();
         LockScreenService.isMustBeLocked = false;
         finish();
     }

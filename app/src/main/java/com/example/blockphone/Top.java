@@ -3,6 +3,7 @@ package com.example.blockphone;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.vk.sdk.VKSdk;
@@ -56,7 +59,13 @@ public class Top  extends ActionBarActivity {
     }
     private void startUI()
     {
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+        window.setStatusBarColor(Color.BLACK);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar_2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Рейтинг");
 

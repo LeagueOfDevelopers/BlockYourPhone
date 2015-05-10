@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +28,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -86,12 +88,21 @@ public class App  extends ActionBarActivity {
     private static KeyguardManager.KeyguardLock kl;
     private static KeyguardManager km;
 
+    static boolean reenabled = false;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
+
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+        window.setStatusBarColor(Color.BLACK);
 
         km = ((KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE));
         kl = km.newKeyguardLock(getPackageName());
@@ -101,7 +112,7 @@ public class App  extends ActionBarActivity {
             Account.restore(App.this,false);
         }
         else
-            Account.restore(App.this,true);
+            //Account.restore(App.this,true);
             getUserData();
 
         startUI();
@@ -288,13 +299,20 @@ public class App  extends ActionBarActivity {
     }
     @Override
     protected void onResume() {
-        kl.reenableKeyguard();
+        reenable();
+        reenabled = false;
         Log.i("App","onResume");
         LockScreenService.isMustBeLocked = false;
         super.onResume();
         VKUIHelper.onResume(this);
         setLocalData();
 
+    }
+    public static void reenable(){
+        if(!reenabled) {
+            kl.reenableKeyguard();
+            reenabled = true;
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

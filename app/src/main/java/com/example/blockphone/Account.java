@@ -56,8 +56,9 @@ public class Account {
             LastName = prefs.getString("AccountLastName", null);
             VkId = prefs.getString("AccountId", null);
             Points = prefs.getInt("AccountPoints", 0);
-            if(!safe)
-                PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto",null).getBytes(), Base64.DEFAULT);
+            String asd = prefs.getString("AccountPhoto",null);
+            if(!asd.equals(null))
+            PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto",null).getBytes(), Base64.DEFAULT);
 
         }
     }

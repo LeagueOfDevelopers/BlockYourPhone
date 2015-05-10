@@ -51,6 +51,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
             @Override
             public void onComplete(final VKResponse response) {
                 super.onComplete(response);
+                Log.e("Vk_Friends","Request Complete");
                     VKList<VKApiUser> _Friends = (VKList<VKApiUser>) response.parsedModel;
                     if(_Friends != null){
                         if(_Friends.size()!= 0) {
@@ -78,7 +79,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                         String previousUrl = prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
                                         if (!photoUrl.equals(previousUrl)) {
                                             try {
-                                                //photoBm = Internet.convertUrlToImage(photoUrl);
+                                                photoBm = Internet.convertUrlToImage(photoUrl);
                                             } catch (Exception e) {
                                                 Logger logger = Logger.getAnonymousLogger();
                                                 logger.log(Level.SEVERE, "an exception was thrown while converting", e);
@@ -97,6 +98,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     ListOfEncPhoto.add(encodedPhoto);
 
                                 }
+                                //Log.e("VK_Friends",_Friends.get(i).first_name);
                                 //todo Херня
                                 //Log.e("VK_Friends",String.valueOf(i));
                                 if (i == _Friends.size() - 1) {

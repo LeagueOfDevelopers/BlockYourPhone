@@ -13,8 +13,8 @@
         android:orientation="vertical">
 
         <include
-            android:id="@+id/tool_bar"
-            layout="@layout/tool_bar">
+            android:id="@+id/tool_bar_2"
+            layout="@layout/tool_bar_2">
         </include>
 
         <com.example.blockphone.SlidingTabLayout
