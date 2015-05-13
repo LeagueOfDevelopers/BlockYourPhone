@@ -37,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -49,12 +50,12 @@ public class LockScreenActivity extends Activity {
     View decorView;
     int windowwidth;
     int windowheight;
-    TextView Unlock;
-    TextView TimeLeft;
-    TextView CurrentTime;
+    TextView Unlock, TimeLeft, CurrentTime, dayOfTheMonth, dayOfTheWeek;
     private int longClickDuration = 500;
     private int longLockDuration = 0;
     private boolean isLongPress = false;
+    private long then;
+
     int progress = 0;
     boolean running;
     LayoutParams layoutParams;
@@ -62,6 +63,11 @@ public class LockScreenActivity extends Activity {
     WindowManager wm;
     ViewGroup mTopView;
     WindowManager.LayoutParams params;
+    boolean isCanBeUnlocked = false;
+    Thread spinningThread;
+    String day,month;
+
+    boolean mustSpeen = true;
     /*
     @Override
     public void onAttachedToWindow() {
@@ -77,19 +83,75 @@ public class LockScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lock_screen_container);
         Log.i("","Lock Screen ON");
-        String lcd[] = App.dropdown1value.split(" ");
-        String lld[] = App.dropdown2value.split(" ");
-        longClickDuration = Integer.valueOf(lcd[0]) * 1000;
+        String lld[] = App.dropdown1value.split(" ");
+        String lcd[] = App.dropdown2value.split(" ");
         longLockDuration  = Integer.valueOf(lld[0]);
+        longClickDuration = Integer.valueOf(lcd[0]) * 1000;
 
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        Paint paint = new Paint();
-        ColorFilter filter = new ColorMatrixColorFilter(cm);
-
-// ... prepare a color filter
-        filter = new PorterDuffColorFilter(Color.rgb(34, 136, 201), PorterDuff.Mode.OVERLAY);
-
+        int dayOfTheWeekCal = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        switch (dayOfTheWeekCal){
+            case Calendar.MONDAY:
+                day = "понедельник";
+                break;
+            case Calendar.TUESDAY:
+                day = "вторник";
+                break;
+            case Calendar.WEDNESDAY:
+                day = "среда";
+                break;
+            case Calendar.THURSDAY:
+                day = "четверг";
+                break;
+            case Calendar.FRIDAY:
+                day = "пятница";
+                break;
+            case Calendar.SATURDAY:
+                day = "суббота";
+                break;
+            case Calendar.SUNDAY:
+                day = "воскресенье";
+                break;
+        }
+        int dayOfTheMonthCal = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        int monthCal = Calendar.getInstance().get(Calendar.MONTH);
+        switch (monthCal){
+            case Calendar.JANUARY:
+                month ="января";
+                break;
+            case Calendar.FEBRUARY:
+                month ="февраля";
+                break;
+            case Calendar.MARCH:
+                month ="марта";
+                break;
+            case Calendar.APRIL:
+                month ="апреля";
+                break;
+            case Calendar.MAY:
+                month ="мая";
+                break;
+            case Calendar.JUNE:
+                month ="июня";
+                break;
+            case Calendar.JULY:
+                month ="июля";
+                break;
+            case Calendar.AUGUST:
+                month ="августа";
+                break;
+            case Calendar.SEPTEMBER:
+                month ="сентября";
+                break;
+            case Calendar.OCTOBER:
+                month ="октября";
+                break;
+            case Calendar.NOVEMBER:
+                month ="ноября";
+                break;
+            case Calendar.DECEMBER:
+                month ="декабря";
+                break;
+        }
         //////////////////////////////////////////////////////////////////////////////////
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -130,12 +192,19 @@ public class LockScreenActivity extends Activity {
 
 
         //nav bar color
-        Window window = getWindow();
+        /*Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+        window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));*/
         //window.setStatusBarColor(Color.BLACK);
 
+        dayOfTheMonth =  (TextView) mTopView.getChildAt(5);
+        dayOfTheMonth.setText(day);
+        dayOfTheMonth.setTextColor(Color.WHITE);
+
+        dayOfTheWeek =  (TextView) mTopView.getChildAt(4);
+        dayOfTheWeek.setText(dayOfTheMonthCal + " "+ month);
+        dayOfTheWeek.setTextColor(Color.WHITE);
 
         TimeLeft = (TextView) mTopView.getChildAt(3);
         TimeLeft.setTextColor(Color.WHITE);
@@ -146,7 +215,6 @@ public class LockScreenActivity extends Activity {
         Unlock = (TextView) mTopView.getChildAt(1);
         Unlock.setText("Разблокировать");
 
-
         Thread myThread = null;
         Runnable myRunnableThread = new CountDownRunner();
         myThread= new Thread(myRunnableThread);
@@ -156,28 +224,29 @@ public class LockScreenActivity extends Activity {
         progress = 0;
         //pw.setW
         //pw.setContourSize(0);
+        int myColor = getResources().getColor(R.color.ColorPrimary);
         pw.setContourColor(Color.TRANSPARENT);
-        pw.setRimColor(Color.TRANSPARENT);
+        pw.setRimColor(Color.TRANSPARENT); //change
         pw.setBackgroundColor(Color.TRANSPARENT);
 
-        final Runnable r = new Runnable() {
+        spinningThread = new Thread() {
             public void run() {
-                running = true;
-                while(progress<360) {
-                    pw.incrementProgress();
-                    progress++;
-                    try {
-                        Thread.sleep(longClickDuration/360);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                //up
+                while (true) {
+                    while (!isCanBeUnlocked)
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    //down
+
                 }
-                running = false;
             }
         };
-        final Thread s = new Thread(r);
-        //s.start();
+        spinningThread.start();
+
 
 
         //UnlockText.set
@@ -187,77 +256,101 @@ public class LockScreenActivity extends Activity {
             finish();
         }
 
-        try{
-            startService(new Intent(this,LockScreenService.class));
+        try {
+            startService(new Intent(this, LockScreenService.class));
 
             StateListener phoneStateListener = new StateListener();
-            TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-            telephonyManager.listen(phoneStateListener,PhoneStateListener.LISTEN_CALL_STATE);
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-          //  windowwidth=getWindowManager().getDefaultDisplay().getWidth();
+            //  windowwidth=getWindowManager().getDefaultDisplay().getWidth();
             //System.out.println("windowwidth"+windowwidth);
-           /// windowheight=getWindowManager().getDefaultDisplay().getHeight();
+            /// windowheight=getWindowManager().getDefaultDisplay().getHeight();
             //System.out.println("windowheight"+windowheight);
 
-           // MarginLayoutParams marginParams2 = new MarginLayoutParams(Unlock.getLayoutParams());
+            // MarginLayoutParams marginParams2 = new MarginLayoutParams(Unlock.getLayoutParams());
 
-           // marginParams2.setMargins((windowwidth/24)*10,((windowheight/32)*8),0,0);
+            // marginParams2.setMargins((windowwidth/24)*10,((windowheight/32)*8),0,0);
 
             //marginParams2.setMargins(((windowwidth-droid.getWidth())/2),((windowheight/32)*8),0,0);
             //RelativeLayout.LayoutParams layoutdroid = new RelativeLayout.LayoutParams(marginParams2);
 
             //Unlock.setLayoutParams(layoutdroid);
-
+        }
+        catch (Exception ignored){}
+        Log.e("LongLockDuration",String.valueOf(longLockDuration));
             Unlock.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(final View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        //s.start();
-                        //s.start();
-                        if(longLockDuration != 1)
-                            Unlock.setText("Удерживайте " + String.valueOf(longLockDuration) + " секунды");
-                        else
-                            Unlock.setText("Удерживайте 1 секунду");
+                public boolean onTouch(View v, MotionEvent event) {
+                    final boolean[] isUnlocked = {false};
 
-                        isLongPress = true;
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
+                    if (longClickDuration/1000 == 1)
+                        Unlock.setText("Удерживайте 1 секунду");
+                    else
+                        Unlock.setText("Удерживайте " + String.valueOf(longClickDuration/1000) + " секунды");
+
+                    //DOWN
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                        isCanBeUnlocked = true;
+
+                        Thread thread1 = new Thread() {
                             public void run() {
-                                if (isLongPress) {
-                                    //TODO вибрацию сделать
-                                    //Vibrator vibrator = (Vibrator) LockScreen.this.getSystemService(Context.VIBRATOR_SERVICE);
-                                    //vibrator.vibrate(100);
-                                    Unlock();
+                                progress = 0;
+                                while (progress < 361) {
+                                    if(!isCanBeUnlocked) break;
+                                    pw.incrementProgress();
+                                    progress++;
+                                    Log.e("progress",String.valueOf(progress));
+
+                                    /*if(progress == 360){
+                                        mustSpeen = false;
+                                        break;
+                                    }*/
+                                    try {
+                                        Thread.sleep(4 * 1000/ 360);
+                                    } catch (InterruptedException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+                        }}};
+                        thread1.start();
+                        /////////////////////////////////////////////
+
+                        //запускает новый поток, который каждые 50 мсек  будет проверять
+                        then = System.currentTimeMillis();
+
+                        Thread thread = new Thread() {
+                            public void run() {
+                                while(!isUnlocked[0]) {
+                                    if(!spinningThread.isAlive()) Log.e("LockScreenActivity","SpinningThread is DEAD");
+                                    if ((System.currentTimeMillis() - then) > longClickDuration) {
+                                        if(isCanBeUnlocked){
+                                            Unlock();
+                                        }
+                                        isUnlocked[0] = true;
+                                    }
+                                    try {
+                                        Thread.sleep(50);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
-                        }, longClickDuration);
+                        };
+                        thread.start();
+                    //UP
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        //longClickDuration = (int)App.dropdown2double*1000;
-                        //pw.
-                        //s.stop();
-                        //s.interrupt();
-                        //pw.resetCount();
+                        //mustSpeen = true;
+                        pw.stopSpinning();
+                        isCanBeUnlocked = false;
                         Unlock.setText("Разблокировать");
-                        isLongPress = false;
+                        return false;
                     }
                     return true;
                 }
             });
-        }catch (Exception e) {
-            // TODO: handle exception
         }
-    }
-
-    //new
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (!hasFocus) {
-            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            sendBroadcast(closeDialog);
-        }
-    }
     public void setTime() {
         runOnUiThread(new Runnable() {
             public void run() {
@@ -279,7 +372,6 @@ public class LockScreenActivity extends Activity {
         });
     }
     private void Unlock(){
-        progress = 0;
         if(mTopView!=null && wm!=null & mTopView.isShown()) {
             wm.removeView(mTopView);
         }
@@ -293,7 +385,7 @@ public class LockScreenActivity extends Activity {
         runOnUiThread(new Runnable() {
             public void run() {
                 try{
-                    new CountDownTimer((int)longLockDuration * 3600000, 1000){
+                    new CountDownTimer(longLockDuration * 3600000, 1000){
                         public void onTick(long millisUntilFinished) {
                             long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
                             long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) -
@@ -328,7 +420,7 @@ public class LockScreenActivity extends Activity {
             while(!Thread.currentThread().isInterrupted()){
                 try {
                     setTime();
-                    Thread.sleep(1000 * 5); // Pause of 5 sec
+                    Thread.sleep(1000); // Pause of 1 sec
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }catch(Exception e){

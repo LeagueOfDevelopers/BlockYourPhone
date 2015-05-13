@@ -162,7 +162,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                 Account.getVkId()).execute();
         VK_Friends.isFriendsReady = true;
 
-        for(int i = 0; i<ListOfFName.size();i++){
+        /*for(int i = 0; i<ListOfFName.size();i++){
             setUserPhotoUrl(ListOfFName.get(i), ListOfLName.get(i), ListOfVkId.get(i), ListOfPoints.get(i));
             while (!isReady)
                 try {
@@ -174,7 +174,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                 }
             isReady = false;
         }
-
+*/
         return null;
     }
     private void setUserPhotoUrl(final String _first_name,

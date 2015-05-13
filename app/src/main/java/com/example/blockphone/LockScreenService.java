@@ -23,12 +23,7 @@ public class LockScreenService extends Service{
     public void onCreate() {
         KeyguardManager.KeyguardLock k1;
 
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         if(isMustBeLocked) {
-
-           /* KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-            k1 = km.newKeyguardLock("IN");
-            k1.disableKeyguard();*/
 
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
