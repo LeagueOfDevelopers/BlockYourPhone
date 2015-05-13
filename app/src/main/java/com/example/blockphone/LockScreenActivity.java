@@ -301,14 +301,14 @@ public class LockScreenActivity extends Activity {
                                     if(!isCanBeUnlocked) break;
                                     pw.incrementProgress();
                                     progress++;
-                                    Log.e("progress",String.valueOf(progress));
+                                   // Log.e("progress",String.valueOf(progress));
 
                                     /*if(progress == 360){
                                         mustSpeen = false;
                                         break;
                                     }*/
                                     try {
-                                        Thread.sleep(4 * 1000/ 360);
+                                        Thread.sleep(longClickDuration/ 360);
                                     } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();

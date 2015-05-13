@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -59,12 +60,14 @@ public class Top  extends ActionBarActivity {
     }
     private void startUI()
     {
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
-        window.setStatusBarColor(Color.BLACK);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+            window.setStatusBarColor(Color.BLACK);
+        }
         toolbar = (Toolbar) findViewById(R.id.tool_bar_2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Рейтинг");

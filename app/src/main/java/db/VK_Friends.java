@@ -79,7 +79,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                         String previousUrl = prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
                                         if (!photoUrl.equals(previousUrl)) {
                                             try {
-                                                //photoBm = Internet.convertUrlToImage(photoUrl);
+                                                photoBm = Internet.convertUrlToImage(photoUrl);
                                             } catch (Exception e) {
                                                 Logger logger = Logger.getAnonymousLogger();
                                                 logger.log(Level.SEVERE, "an exception was thrown while converting", e);

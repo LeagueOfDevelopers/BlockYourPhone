@@ -97,13 +97,13 @@ public class App  extends ActionBarActivity {
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
 
-
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
-        window.setStatusBarColor(Color.BLACK);
-
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+             window.setStatusBarColor(Color.BLACK);
+        }
         km = ((KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE));
         kl = km.newKeyguardLock(getPackageName());
 
