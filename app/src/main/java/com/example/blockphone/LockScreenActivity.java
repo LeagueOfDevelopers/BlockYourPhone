@@ -45,20 +45,12 @@ import java.util.concurrent.TimeUnit;
 
 public class LockScreenActivity extends Activity {
 
-    /** Called when the activity is first created. */
-    KeyguardManager.KeyguardLock k1;
-    View decorView;
-    int windowwidth;
-    int windowheight;
     TextView Unlock, TimeLeft, CurrentTime, dayOfTheMonth, dayOfTheWeek;
     private int longClickDuration = 500;
     private int longLockDuration = 0;
-    private boolean isLongPress = false;
     private long then;
 
     int progress = 0;
-    boolean running;
-    LayoutParams layoutParams;
     ProgressWheel pw;
     WindowManager wm;
     ViewGroup mTopView;
@@ -67,28 +59,24 @@ public class LockScreenActivity extends Activity {
     Thread spinningThread;
     String day,month;
 
-    boolean mustSpeen = true;
-    /*
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-    }
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }*/
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lock_screen_container);
         Log.i("","Lock Screen ON");
+
         String lld[] = App.dropdown1value.split(" ");
         String lcd[] = App.dropdown2value.split(" ");
+
         longLockDuration  = Integer.valueOf(lld[0]);
         longClickDuration = Integer.valueOf(lcd[0]) * 1000;
 
         int dayOfTheWeekCal = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int dayOfTheMonthCal = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        int monthCal = Calendar.getInstance().get(Calendar.MONTH);
+
+        //region dayOfTheWeek switch
         switch (dayOfTheWeekCal){
             case Calendar.MONDAY:
                 day = "понедельник";
@@ -112,8 +100,9 @@ public class LockScreenActivity extends Activity {
                 day = "воскресенье";
                 break;
         }
-        int dayOfTheMonthCal = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        int monthCal = Calendar.getInstance().get(Calendar.MONTH);
+        //endregion
+
+        //region Months switch
         switch (monthCal){
             case Calendar.JANUARY:
                 month ="января";
@@ -152,7 +141,10 @@ public class LockScreenActivity extends Activity {
                 month ="декабря";
                 break;
         }
-        //////////////////////////////////////////////////////////////////////////////////
+        //endregion swtich
+
+
+        //setting params to lock screen
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -175,15 +167,14 @@ public class LockScreenActivity extends Activity {
             1 - Round Text View
             2 - Upper TextView
             3 - Downer TextView  - TimeLeft
-            4 - Test Button
+            4 - dayOfTheWeek
+            5 - dayOfTheMonth
          */
 
-        /////////////////////////////////////////////////////////////////////////////////
 
-        WallpaperManager myWallpaperManager = WallpaperManager
-                .getInstance(getApplicationContext());
 
-        //background
+        //background color or drawable
+        WallpaperManager myWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         RelativeLayout parentLayout = (RelativeLayout) mTopView.getChildAt(3).getParent();
         Drawable myDrawable = myWallpaperManager.getDrawable();
         myDrawable.setAlpha(100);
@@ -215,69 +206,32 @@ public class LockScreenActivity extends Activity {
         Unlock = (TextView) mTopView.getChildAt(1);
         Unlock.setText("Разблокировать");
 
-        Thread myThread = null;
-        Runnable myRunnableThread = new CountDownRunner();
-        myThread= new Thread(myRunnableThread);
-        myThread.start();
-
         pw = (ProgressWheel) mTopView.getChildAt(0);
-        progress = 0;
-        //pw.setW
-        //pw.setContourSize(0);
+
+        //try to set color to rim
         int myColor = getResources().getColor(R.color.ColorPrimary);
         pw.setContourColor(Color.TRANSPARENT);
         pw.setRimColor(Color.TRANSPARENT); //change
         pw.setBackgroundColor(Color.TRANSPARENT);
 
-        spinningThread = new Thread() {
-            public void run() {
-                //up
-                while (true) {
-                    while (!isCanBeUnlocked)
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
 
-                    //down
-
-                }
-            }
-        };
-        spinningThread.start();
+        //CountDownRunner
+        new Thread(new CountDownRunner()).start();
 
 
-
-        //UnlockText.set
-        //UnlockText.setTextColor(Color.WHITE);
-
-        if(getIntent () !=null&&getIntent().hasExtra (" kill")&&getIntent().getExtras().getInt("kill")==1){
+        if(getIntent () !=null&&getIntent().hasExtra(" kill")&&getIntent().getExtras().getInt("kill")==1){
             finish();
         }
 
         try {
             startService(new Intent(this, LockScreenService.class));
-
             StateListener phoneStateListener = new StateListener();
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
-
-            //  windowwidth=getWindowManager().getDefaultDisplay().getWidth();
-            //System.out.println("windowwidth"+windowwidth);
-            /// windowheight=getWindowManager().getDefaultDisplay().getHeight();
-            //System.out.println("windowheight"+windowheight);
-
-            // MarginLayoutParams marginParams2 = new MarginLayoutParams(Unlock.getLayoutParams());
-
-            // marginParams2.setMargins((windowwidth/24)*10,((windowheight/32)*8),0,0);
-
-            //marginParams2.setMargins(((windowwidth-droid.getWidth())/2),((windowheight/32)*8),0,0);
-            //RelativeLayout.LayoutParams layoutdroid = new RelativeLayout.LayoutParams(marginParams2);
-
-            //Unlock.setLayoutParams(layoutdroid);
         }
         catch (Exception ignored){}
+
+
         Log.e("LongLockDuration",String.valueOf(longLockDuration));
             Unlock.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -301,23 +255,14 @@ public class LockScreenActivity extends Activity {
                                     if(!isCanBeUnlocked) break;
                                     pw.incrementProgress();
                                     progress++;
-                                   // Log.e("progress",String.valueOf(progress));
-
-                                    /*if(progress == 360){
-                                        mustSpeen = false;
-                                        break;
-                                    }*/
                                     try {
                                         Thread.sleep(longClickDuration/ 360);
                                     } catch (InterruptedException e) {
-                                        // TODO Auto-generated catch block
                                         e.printStackTrace();
                                     }
                         }}};
                         thread1.start();
-                        /////////////////////////////////////////////
 
-                        //запускает новый поток, который каждые 50 мсек  будет проверять
                         then = System.currentTimeMillis();
 
                         Thread thread = new Thread() {
@@ -339,9 +284,10 @@ public class LockScreenActivity extends Activity {
                             }
                         };
                         thread.start();
+
+
                     //UP
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        //mustSpeen = true;
                         pw.stopSpinning();
                         isCanBeUnlocked = false;
                         Unlock.setText("Разблокировать");
@@ -354,20 +300,21 @@ public class LockScreenActivity extends Activity {
     public void setTime() {
         runOnUiThread(new Runnable() {
             public void run() {
-                try{
+                try {
                     Date dt = new Date();
                     int hours = dt.getHours();
                     int minutes = dt.getMinutes();
                     String curTime = null;
-                    if(minutes < 10){
+                    if (minutes < 10) {
 
                         String thisminutes = "0" + String.valueOf(minutes);
-                        curTime = String.valueOf(hours) + ":" + thisminutes;}
-                    else
+                        curTime = String.valueOf(hours) + ":" + thisminutes;
+                    } else
                         curTime = hours + ":" + minutes;
-                    wm.updateViewLayout(mTopView,params);
+                    wm.updateViewLayout(mTopView, params);
                     CurrentTime.setText(curTime);
-                }catch (Exception e) {}
+                } catch (Exception ignored) {
+                }
             }
         });
     }
@@ -407,14 +354,13 @@ public class LockScreenActivity extends Activity {
                             Unlock();
                         }
                     }.start();
-                }catch (Exception e) {}
+                }catch (Exception ignored) {}
             }
         });
     }
 
 
     class CountDownRunner implements Runnable{
-        // @Override
         public void run() {
             setLeftTime();
             while(!Thread.currentThread().isInterrupted()){
@@ -432,7 +378,7 @@ public class LockScreenActivity extends Activity {
 
     @Override
     protected void onUserLeaveHint() {
-        Log.e("","onUserLeaveHint");
+        Log.e("", "onUserLeaveHint");
 
         super.onUserLeaveHint();
     }
@@ -454,88 +400,11 @@ public class LockScreenActivity extends Activity {
                     break;
             }
         }
-    }/*
-    public void onSlideTouch( View view, MotionEvent event )
-    {
-        switch(event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int x_cord = (int)event.getRawX();
-                int y_cord = (int)event.getRawY();
-
-                if(x_cord>windowwidth){x_cord=windowwidth;}
-                if(y_cord>windowheight){y_cord=windowheight;}
-
-                layoutParams.leftMargin = x_cord -25;
-                layoutParams.topMargin = y_cord - 75;
-
-                view.setLayoutParams(layoutParams);
-                break;
-            default:
-                break;
-        }
     }
-*/
+
     @Override
     public void onBackPressed() {
         // Don't allow back to dismiss.
-        return;
-    }
-
-    //only used in lockdown mode
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Don't hang around.
-        // finish();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        // Don't hang around.
-        // finish(
-    }
-
-    /*
-    @Override
-    public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
-
-        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)||(keyCode == KeyEvent.KEYCODE_POWER)||(keyCode == KeyEvent.KEYCODE_VOLUME_UP)||(keyCode == KeyEvent.KEYCODE_CAMERA)) {
-            //this is where I can do my stuff
-            return true; //because I handled the event
-        }
-        if((keyCode == KeyEvent.KEYCODE_HOME)){
-            Intent intent = new Intent(this, LoActivityckScreen.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            Log.e("","HOME");
-            return true;
-        }
-        return false;    }
-*/
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER ||(event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN)||(event.getKeyCode() == KeyEvent.KEYCODE_POWER)) {
-            //Intent i = new Intent(this, NewActivity.class);
-            //startActivity(i);
-            return false;
-        }
-        if((event.getKeyCode() == KeyEvent.KEYCODE_HOME)){  //WHY ALWAYS FUCKING FALSE
-            Log.e("","HOME");
-            System.out.println("alokkkkkkkkkkkkkkkkk");
-            return true;
-        }
-        return false;
-    }
-
-    public void onDestroy(){
-        // k1.reenableKeyguard();
-
-        super.onDestroy();
     }
 
 }

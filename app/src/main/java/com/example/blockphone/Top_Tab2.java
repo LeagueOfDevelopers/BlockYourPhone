@@ -101,6 +101,7 @@ public final class Top_Tab2 extends Fragment {
     public void LoadFriends(Context context){
         //TODO Progress dialog
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         for(int i=0;i<NUMBER_OF_SHOWING_USERS; i++){
             if (prefs != null){
                 String str = prefs.getString("UserPhoto" + String.valueOf(i), null);
@@ -111,7 +112,6 @@ public final class Top_Tab2 extends Fragment {
                         PointsList.add(Integer.parseInt(prefs.getString("UserPoints" + String.valueOf(i), null)));
                         VkIdList.add((prefs.getString("UserVkId" + String.valueOf(i), null)));
                         String PhotoEncoded = prefs.getString("UserPhoto" + String.valueOf(i), null);
-
                         byte[] b = PhotoEncoded.getBytes();
                         byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
                         if (PhotoAsBytes == null)

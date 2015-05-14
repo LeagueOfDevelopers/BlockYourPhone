@@ -28,15 +28,16 @@ import java.util.logging.Logger;
  * Created by Жамбыл on 19.04.2015.
  */
 public class VK_Friends extends AsyncTask<String, String, String> {
+
     Context context;
     public static boolean isFriendsReady= false;
     boolean isReady = false;
+    
     public static List<String> ListOfFName = new ArrayList<String>();
     public static List<String> ListOfLName = new ArrayList<String>();
     public static List<String> ListOfVkId = new ArrayList<String>();
     public static List<String> ListOfPoints = new ArrayList<String>();
     public static List<String> ListOfEncPhoto = new ArrayList<String>();
-
 
     public  VK_Friends(Context _context){context = _context;}
 
@@ -72,18 +73,15 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     editor.putBoolean("hasFriends", true);
                                     editor.apply();
 
-
                                     String photoUrl = _Friends.get(i).photo_100;
                                     Bitmap photoBm = null;
                                     if (photoUrl != null) {
                                         String previousUrl = prefs.getString("FriendPhotoUrl" + String.valueOf(i), null);
-                                        if (!photoUrl.equals(previousUrl)) {
-                                            try {
-                                                photoBm = Internet.convertUrlToImage(photoUrl);
-                                            } catch (Exception e) {
-                                                Logger logger = Logger.getAnonymousLogger();
-                                                logger.log(Level.SEVERE, "an exception was thrown while converting", e);
-                                            }
+                                        if (!photoUrl.equals(previousUrl)) try {
+                                            photoBm = Internet.convertUrlToImage(photoUrl);
+                                        } catch (Exception e) {
+                                            Logger logger = Logger.getAnonymousLogger();
+                                            logger.log(Level.SEVERE, "an exception was thrown while converting", e);
                                         }
                                     }
                                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -98,14 +96,11 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     ListOfEncPhoto.add(encodedPhoto);
 
                                 }
-                                //Log.e("VK_Friends",_Friends.get(i).first_name);
-                                //todo Херня
-                                //Log.e("VK_Friends",String.valueOf(i));
                                 if (i == _Friends.size() - 1) {
                                     isReady = true;
                                 }
                             }
-                            //
+                            //bubble
                             for (int k = 0; k < ListOfFName.size(); k++)
                                 for (int j = 0; j < ListOfFName.size() - k - 1; j++)
                                     if (Integer.valueOf(ListOfPoints.get(j)) < Integer.valueOf(ListOfPoints.get(j + 1))) {
@@ -133,18 +128,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                         }
                         else{Log.e("","Нет друзей");}}else{Log.e("","Нет друзей");}
             }
-        });/*
-        while(!isReady){
-            try {
-                Thread.sleep(300);
-                Log.e("VK_Friends","Sleeping 2");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-
-
+        });
         return null;
     }
 
