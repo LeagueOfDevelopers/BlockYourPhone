@@ -41,11 +41,8 @@ public class Account {
             editor.putString("AccountPhoto", Base64.encodeToString(PhotoAsBytes, Base64.DEFAULT));
             editor.apply();
 
-            Log.e("FName", FirstName);
-            Log.e("LName", LastName);
-           // Log.e("Account Points is", String.valueOf(DB_read_all.GetPoints(VkId)));
-
-            //new DB_read_by_id(VkId,context,-1).execute();
+            Log.i("FName", FirstName);
+            Log.i("LName", LastName);
         }
     }
 
@@ -57,14 +54,18 @@ public class Account {
             VkId = prefs.getString("AccountId", null);
             Points = prefs.getInt("AccountPoints", 0);
             String asd = prefs.getString("AccountPhoto",null);
-            if(!asd.equals(null))
-            PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto",null).getBytes(), Base64.DEFAULT);
+            if (asd != null) PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto", null).getBytes(), Base64.DEFAULT);
 
         }
     }
     public static String getVkId() {
         return VkId;
     }
+
+    /*
+        getters and setters
+     */
+
     public static String getPhotoUrl() {
         return PhotoUrl;
     }

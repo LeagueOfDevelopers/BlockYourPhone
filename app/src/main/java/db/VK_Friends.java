@@ -30,9 +30,8 @@ import java.util.logging.Logger;
 public class VK_Friends extends AsyncTask<String, String, String> {
 
     Context context;
-    public static boolean isFriendsReady= false;
     boolean isReady = false;
-    
+
     public static List<String> ListOfFName = new ArrayList<String>();
     public static List<String> ListOfLName = new ArrayList<String>();
     public static List<String> ListOfVkId = new ArrayList<String>();
@@ -43,7 +42,7 @@ public class VK_Friends extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        Log.e("VK_Friends", "getting friends data");
+        Log.i("VK_Friends", "getting friends data");
         //todo Change to getAppUsers
         VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
                 "id,first_name,last_name,photo_100,"));
@@ -52,22 +51,14 @@ public class VK_Friends extends AsyncTask<String, String, String> {
             @Override
             public void onComplete(final VKResponse response) {
                 super.onComplete(response);
-                Log.e("Vk_Friends","Request Complete");
+                Log.i("Vk_Friends","Request Complete");
                     VKList<VKApiUser> _Friends = (VKList<VKApiUser>) response.parsedModel;
                     if(_Friends != null){
                         if(_Friends.size()!= 0) {
-                            while (!isFriendsReady)
-                                try {
-                                    Thread.sleep(300);
-                                    Log.e("VK_Friends", "Sleeping 1");
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
                             for (int i = 0; i < _Friends.size(); ++i) {
                                 int thisPoints = -3;
                                 thisPoints = DB_read_all.searchPoints(String.valueOf(_Friends.get(i).id));
                                 if (thisPoints != -2) {
-                                    Log.e("VK_Friends",_Friends.get(i).first_name);
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                                     SharedPreferences.Editor editor = prefs.edit();
                                     editor.putBoolean("hasFriends", true);
@@ -84,6 +75,8 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                             logger.log(Level.SEVERE, "an exception was thrown while converting", e);
                                         }
                                     }
+
+                                    Log.i("VK_friends",_Friends.get(i).first_name);
                                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                     if (photoBm != null)
                                         photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -94,7 +87,6 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                     ListOfPoints.add(String.valueOf(thisPoints));
                                     ListOfVkId.add(String.valueOf(_Friends.get(i).id));
                                     ListOfEncPhoto.add(encodedPhoto);
-
                                 }
                                 if (i == _Friends.size() - 1) {
                                     isReady = true;
@@ -124,9 +116,9 @@ public class VK_Friends extends AsyncTask<String, String, String> {
                                 editor.putString("FriendVkId" + String.valueOf(k), ListOfVkId.get(k));
                                 editor.apply();
                             }
-                            Log.e("VK_Friends","Success");
+                            Log.i("VK_Friends","Success");
                         }
-                        else{Log.e("","Нет друзей");}}else{Log.e("","Нет друзей");}
+                        else{Log.i("","Нет друзей");}}else{Log.i("","Нет друзей");}
             }
         });
         return null;

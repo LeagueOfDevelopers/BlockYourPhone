@@ -1,22 +1,16 @@
 package com.example.blockphone;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +21,6 @@ import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -48,7 +41,6 @@ import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,40 +50,20 @@ import db.VK_Friends;
 /**
  * Created by Жамбыл on 26.03.2015.
  */
-public class App  extends ActionBarActivity {
+public class App  extends AppActivity {
     //Главная
-    public static int NumberOfFriend = 0;
-    //public static VKList<VKApiUser> Friends;
     String TITLES[] = {"Блокировка","Рейтинг","Выход"};
-    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
+
     Button MainBlockButton;
     TextView Text1,Text2;
-    public static String  dropdown1value, dropdown2value;
-    Typeface type_thin;
-    Typeface type;
+    static String  dropdown1value, dropdown2value;
     String[] Seconds = new String[] {"1 секунда","2 секунды","3 секунды","4 секунды"};
     String[] Hours = new String[] {"1 час","2 часа","3 часа","4 часа"};
     Spinner dropdown1, dropdown2;
 
-    String NAME = Account.getFullName();
-    int POINTS = Account.getPoints();
-    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
-
-    private Toolbar toolbar;
-    RecyclerView mRecyclerView;
-    RecyclerView.Adapter mAdapter;
-    RecyclerView.LayoutManager mLayoutManager;
-    DrawerLayout Drawer;
-    LinearLayout layoutFromRecycler;
-    ActionBarDrawerToggle mDrawerToggle;
-
-    private static KeyguardManager.KeyguardLock kl;
-    private static KeyguardManager km;
-
-    static boolean reenabled = false;
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         Log.i("App", "OnCreate");
         setContentView(R.layout.main_app);
@@ -104,12 +76,13 @@ public class App  extends ActionBarActivity {
             //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
              window.setStatusBarColor(Color.BLACK);
         }
-        km = ((KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE));
+
+        km = ((KeyguardManager)getSystemService(KEYGUARD_SERVICE));
         kl = km.newKeyguardLock(getPackageName());
 
         if(!Internet.isNetworkConnection(App.this)){
             Log.e("App","Restoring Acc data");
-            Account.restore(App.this,false);
+            Account.restore(App.this, false);
         }
         else
             //Account.restore(App.this,true);
@@ -270,22 +243,6 @@ public class App  extends ActionBarActivity {
         @Override
         public void onClick(View view) {
            //THE MAIN FUNCTIONALITY
-/*
-            startService(new Intent(App.this,LockScreenService.class));
-            LockScreenService.isMustBeLocked = true;
-            String packageName = "com.android.launcher";
-            String packageClass = "com.android.launcher2.Launcher";
-
-            Intent home_intent = new Intent(Intent.ACTION_MAIN);
-            home_intent.addCategory(Intent.CATEGORY_HOME);
-            home_intent.setComponent(new ComponentName(packageName, packageClass));
-            home_intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-
-        /* Here you should catch the exception when the launcher has been uninstalled,
-           and let the user save themselves by opening the Market or an app list or something.
-           Users sometimes use root apps to uninstall the system launcher, so your fake launcher
-           is all that is left. Might as well give the poor user a hand. */
-//            startActivity(home_intent);
            Lock();
         }};
     private void Lock(){
@@ -360,8 +317,10 @@ public class App  extends ActionBarActivity {
                             encodedPhoto, MainUser.get(0).photo_100);
                 }
                 setLocalData();
+
+                //getting data from db
                 new DB_read_all(App.this).execute();
-                new VK_Friends(App.this).execute();
+
             }
         });}
 
@@ -393,5 +352,6 @@ public class App  extends ActionBarActivity {
                                 finish();
                             }
                         }).create().show();
+
+        }
     }
-}

@@ -24,15 +24,10 @@ import java.util.logging.Logger;
 /**
  * Created by Жамбыл on 29.03.2015.
  */
-public final class Top_Tab2 extends Fragment {
+public final class Top_Tab2 extends Top_Tab {
     Typeface type_thin;
     ListView VkRowListView2;
 
-    final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
-    final String ATTRIBUTE_NAME_TEXT_RAITING = "text_place";
-    final String ATTRIBUTE_NAME_IMAGE = "image";
-    final String ATTRIBUTE_NAME_VKID = "vk_id";
-    public static final int NUMBER_OF_SHOWING_USERS = 12;//TODO change
     View _v;
 
     List<String> FriendNames =  new ArrayList<String>();
@@ -40,7 +35,7 @@ public final class Top_Tab2 extends Fragment {
     List<String> VkIdList = new ArrayList<String>();
     List<byte[]>PhotoAsBytesList = new ArrayList<byte[]>();
 
-    String[] from = { ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_RAITING,
+    String[] from = { ATTRIBUTE_NAME_TEXT_NAME, ATTRIBUTE_NAME_TEXT_PLACE,
             ATTRIBUTE_NAME_IMAGE,ATTRIBUTE_NAME_VKID};
 
     int[] to = { R.id.vk_name, R.id.vk_raiting, R.id.vk_photo };
@@ -76,17 +71,17 @@ public final class Top_Tab2 extends Fragment {
         }
     };
 
-    private void StartUI(View v)
+    void StartUI(View v)
     {
         type_thin= Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
     }
     //TODO динамическая загрузка
-    private void PackAndSendData(View v)
+    void PackAndSendData(View v)
     {
         for(int i=0;i< FriendNames.size(); i++) {
             m = new HashMap<String, Object>();
             m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
-            m.put(ATTRIBUTE_NAME_TEXT_RAITING, PointsList.get(i));
+            m.put(ATTRIBUTE_NAME_TEXT_PLACE, PointsList.get(i));
             m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
             m.put(ATTRIBUTE_NAME_VKID , VkIdList.get(i));
             data.add(m);

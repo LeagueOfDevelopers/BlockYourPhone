@@ -61,7 +61,7 @@ public class DrawableAdapter extends RecyclerView.Adapter<DrawableAdapter.ViewHo
         }
 
     }
-    DrawableAdapter(String Titles[], int Icons[], String Name, int _points, byte[] Profile, Context passedContext){
+    public DrawableAdapter(String Titles[], int Icons[], String Name, int _points, byte[] Profile, Context passedContext){
         mNavTitles = Titles;
         mIcons = Icons;
         name = Name;

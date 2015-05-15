@@ -1,40 +1,22 @@
 package com.example.blockphone;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
 import android.app.WallpaperManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.PowerManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -255,6 +237,7 @@ public class LockScreenActivity extends Activity {
                                     if(!isCanBeUnlocked) break;
                                     pw.incrementProgress();
                                     progress++;
+                                    Log.v("pw progress", String.valueOf(progress));
                                     try {
                                         Thread.sleep(longClickDuration/ 360);
                                     } catch (InterruptedException e) {
@@ -268,7 +251,6 @@ public class LockScreenActivity extends Activity {
                         Thread thread = new Thread() {
                             public void run() {
                                 while(!isUnlocked[0]) {
-                                    if(!spinningThread.isAlive()) Log.e("LockScreenActivity","SpinningThread is DEAD");
                                     if ((System.currentTimeMillis() - then) > longClickDuration) {
                                         if(isCanBeUnlocked){
                                             Unlock();

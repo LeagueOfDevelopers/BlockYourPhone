@@ -1,23 +1,15 @@
 package db;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
 import com.example.blockphone.Account;
-import com.example.blockphone.App;
 import com.example.blockphone.Internet;
-import com.example.blockphone.Top_Tab2;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKParameters;
@@ -33,13 +25,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,13 +87,12 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
 
         // Check your log cat for JSON reponse
         if(json!=null){
-            //Log.e("Users_all: ", json.toString());
             try {
                 // Checking for SUCCESS TAG
                 int success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     users = json.getJSONArray(TAG_USERS);
-                    Log.e("Succes getting users, users amount", String.valueOf(users.length()));
+                    Log.i("Succes getting users, users amount", String.valueOf(users.length()));
 
                     //iters  = users.length()<Top_Tab2.NUMBER_OF_SHOWING_USERS
                     //      ?users.length():Top_Tab2.NUMBER_OF_SHOWING_USERS;
@@ -119,7 +106,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                         String s = new String(first_name.getBytes("ISO-8859-1"), "Windows-1251");
                         first_name = new String(("\uFEFF" + s).getBytes("UTF-8"));
                         ListOfFName.add(first_name);
-                        Log.e("DB_read_all",first_name);
+                        Log.i("DB_read_all",first_name);
 
                         last_name = c.getString(TAG_LAST_NAME);   //
                         String l = new String(last_name.getBytes("ISO-8859-1"), "Windows-1251");
@@ -160,15 +147,15 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
         Account.setPoints(context,searchPoints(Account.getVkId()),false);
         new DB_create(context, Account.getFirstName(), Account.getLastName(),
                 Account.getVkId()).execute();
-        VK_Friends.isFriendsReady = true;
+
+        new VK_Friends(context).execute();
 
         for(int i = 0; i<ListOfFName.size();i++){
             setUserPhotoUrl(ListOfFName.get(i), ListOfLName.get(i), ListOfVkId.get(i), ListOfPoints.get(i));
             while (!isReady)
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                     //todo change
-                    //Log.e("DB_read_all","Sleeping");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -194,7 +181,7 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = prefs.edit();
-                if(photo_url !=null){
+                if(photo_url != null){
                     try {
                         photoBm = Internet.convertUrlToImage(photo_url);
                     }
@@ -217,9 +204,9 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
                 editor.putString("UserPoints" + String.valueOf(I), _points);
                 editor.putString("UserPhoto" + String.valueOf(I), encodedPhoto);
                 editor.apply();
-                Log.e("Photo  All",_first_name);
+                Log.i("Photo  All",_first_name);
                 if(I == users.length() - 1){
-                    Log.e("DB_read_all","Success");
+                    Log.i("DB_read_all","Success");
                 }
                 isReady = true;
                 I++;

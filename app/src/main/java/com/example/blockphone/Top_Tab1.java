@@ -1,6 +1,5 @@
 package com.example.blockphone;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +9,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -35,12 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import db.VK_Friends;
-
 /**
  * Created by Жамбыл on 29.03.2015.
  */
-public final class Top_Tab1 extends Fragment {
+public final class Top_Tab1 extends Top_Tab {
     ListView VkRowListView1;
     Button PostToWallButton;
     TextView NoFriendsText;
@@ -48,10 +43,7 @@ public final class Top_Tab1 extends Fragment {
     Boolean isPosted = false;
     Boolean isReady = false;
 
-    final String ATTRIBUTE_NAME_TEXT_NAME = "text_name";
-    final String ATTRIBUTE_NAME_TEXT_PLACE = "text_place";
-    final String ATTRIBUTE_NAME_IMAGE = "image";
-    final int NUMBER_OF_SHOWING_USERS = 10;//TODO change
+
 
     List<String> FriendNames =  new ArrayList<String>();
     List<String> PointsList = new ArrayList<String>();
@@ -106,8 +98,7 @@ public final class Top_Tab1 extends Fragment {
         }
         return v;
     }
-
-    private void PackAndSendData(View v)
+    void PackAndSendData(View v)
     {
         Log.e("Top_Tab1", "Packing Data");
         for(int i=0;i<FriendNames.size(); i++) {
@@ -124,7 +115,7 @@ public final class Top_Tab1 extends Fragment {
         VkRowListView1.setAdapter(sAdapter1);
     }
 
-    public void LoadFriends(Context context){
+    void LoadFriends(Context context){
         //TODO Progress dialog
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -147,8 +138,7 @@ public final class Top_Tab1 extends Fragment {
         isReady = true;
         Log.e("Top_Tab1","Loading Friends");
     }
-
-    private void StartUI(View v)
+    void StartUI(View v)
     {
         type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
 
@@ -184,6 +174,7 @@ public final class Top_Tab1 extends Fragment {
                             }).create().show();
         }
     };
+
     private void makePost(VKAttachments attachments, String message) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         long id = 0;

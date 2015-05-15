@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,29 +26,15 @@ import db.VK_Friends;
 /**
  * Created by Жамбыл on 27.03.2015.
  */
-public class Top  extends ActionBarActivity {
-    //Рейтинг
+public class Top  extends AppActivity {
+
     String TITLES[] = {"Блокировка","Рейтинг","Выход"};
-    int ICONS[] = {R.drawable.ic_action,R.drawable.ic_raiting,R.drawable.ic_quit};
 
-    //Для хедера
-    String NAME = Account.getFullName();
-    int POINTS = Account.getPoints();
-    byte [] PROFILE_PHOTO = Account.getPhotoAsBytes();
-
-    private Toolbar toolbar;
-
-    RecyclerView mRecyclerView;
-    RecyclerView.Adapter mAdapter;
-    RecyclerView.LayoutManager mLayoutManager;
-    DrawerLayout Drawer;
-    int Numboftabs = 2;
+    int NumbOfTabs = 2;
     ViewPager pager;
     Top_ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
     CharSequence Titles[]={"Друзья","Все"};
-    LinearLayout layoutFromRecycler;
-    ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -77,7 +62,7 @@ public class Top  extends ActionBarActivity {
 
         mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
 
-        adapter =  new Top_ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
+        adapter =  new Top_ViewPagerAdapter(getSupportFragmentManager(),Titles, NumbOfTabs);
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
