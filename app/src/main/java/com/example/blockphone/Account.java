@@ -34,11 +34,12 @@ public class Account {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
 
-        if (!FirstName.equals(null) & !LastName.equals(null) & !VkId.equals(null) & PhotoAsBytes != null) {
+        if (!FirstName.equals(null) & !LastName.equals(null) & !VkId.equals(null)) {
             editor.putString("AccountFirstName", FirstName);
             editor.putString("AccountLastName", LastName);
             editor.putString("AccountId", VkId);
-            editor.putString("AccountPhoto", Base64.encodeToString(PhotoAsBytes, Base64.DEFAULT));
+            editor.putString("AccountPhotoUrl", PhotoUrl);
+            if(PhotoAsBytes!=null) editor.putString("AccountPhoto", Base64.encodeToString(PhotoAsBytes, Base64.DEFAULT));
             editor.apply();
 
             Log.i("FName", FirstName);
@@ -53,8 +54,8 @@ public class Account {
             LastName = prefs.getString("AccountLastName", null);
             VkId = prefs.getString("AccountId", null);
             Points = prefs.getInt("AccountPoints", 0);
-            String asd = prefs.getString("AccountPhoto",null);
-            if (asd != null) PhotoAsBytes = Base64.decode(prefs.getString("AccountPhoto", null).getBytes(), Base64.DEFAULT);
+            String accountPhoto = prefs.getString("AccountPhoto",null);
+            if (accountPhoto != null) PhotoAsBytes = Base64.decode(accountPhoto.getBytes(), Base64.DEFAULT);
 
         }
     }
@@ -66,8 +67,11 @@ public class Account {
         getters and setters
      */
 
-    public static String getPhotoUrl() {
-        return PhotoUrl;
+    public static String getPhotoUrl(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String PhotoUrlSaved = prefs.getString("AccountPhotoUrl",null);
+        return PhotoUrl!=null?PhotoUrl:PhotoUrlSaved;
     }
     public static String getFirstName() {
         return FirstName;
@@ -78,6 +82,7 @@ public class Account {
     public static String getFullName() {
         return FirstName + " " + LastName;
     }
+
 
     public static int getPoints() {
         return Points;
