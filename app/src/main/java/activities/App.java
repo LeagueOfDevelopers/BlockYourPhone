@@ -1,4 +1,4 @@
-package com.example.blockphone;
+package activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,6 +19,12 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.blockphone.Account;
+import com.example.blockphone.AppActivity;
+import com.example.blockphone.DrawableAdapter;
+import com.example.blockphone.Internet;
+import com.example.blockphone.LockScreenService;
+import com.example.blockphone.R;
 import com.vk.sdk.VKUIHelper;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -38,7 +44,7 @@ import db.DB_read_all;
  * Created by Жамбыл on 26.03.2015.
  */
 
-public class App  extends AppActivity  {
+public class App  extends AppActivity {
     //Главная
 
     //
@@ -70,9 +76,10 @@ public class App  extends AppActivity  {
             Log.e("App","Restoring Acc data");
             Account.restore(App.this, false);
         }
-        else
+        else {
             Account.restore(App.this, true);
             getUserData();
+        }
         startUI();
         startLocalUI();
 
@@ -139,7 +146,6 @@ public class App  extends AppActivity  {
         dropdown2.setAdapter(adapter2);
         //endregion
 
-
         BlockTime = (TextView)findViewById(R.id.Text1);
         BlockTime.setTypeface(type_thin);
 
@@ -166,7 +172,7 @@ public class App  extends AppActivity  {
            Lock();
         }};
 
-    private void Lock(){
+    private void Lock() {
         kl.disableKeyguard();
         startService(new Intent(this, LockScreenService.class));
         LockScreenService.isMustBeLocked = true;
@@ -208,7 +214,7 @@ public class App  extends AppActivity  {
                 super.onComplete(response);
                 String encodedPhoto = null;
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.this);
                 SharedPreferences.Editor editor = prefs.edit();
 
                 VKList<VKApiUser> MainUser = (VKList<VKApiUser>) response.parsedModel;
@@ -222,17 +228,15 @@ public class App  extends AppActivity  {
                     if (!photoUrl.equals(previousUrl)) {
                         try {
                             photoBm = Internet.convertUrlToImage(photoUrl);
-
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    if (photoBm != null)
-                        photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    byte[] b = baos.toByteArray();
-                    encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
-                    if (!encodedPhoto.equals(null)) {
-                        Log.i("App", "getting user data SUCCESS");
-                        setLocalData();
-                    }
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            if (photoBm != null)
+                                photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                            byte[] b = baos.toByteArray();
+                            encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                            if (!encodedPhoto.equals(null)) {
+                                Log.i("App", "getting user data SUCCESS");
+                                setLocalData();
+                            }
                         } catch (Exception e) {
                             Logger logger = Logger.getAnonymousLogger();
                             logger.log(Level.SEVERE, "an exception was thrown while converting", e);

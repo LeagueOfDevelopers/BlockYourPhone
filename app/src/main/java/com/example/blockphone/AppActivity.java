@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 
 import com.vk.sdk.VKSdk;
 
+import activities.MainActivity;
+import activities.Top;
 import db.VK_Friends;
 
 /*
@@ -76,8 +78,10 @@ import db.VK_Friends;
       this.recyclerViewId = recyclerViewId;
       this.layoutFromRecyclerId = layoutFromRecyclerId;
       this.ActivityId = ActivityId;
+
+
    }
-   protected void startUI(){
+   public void startUI(){
 
       if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
          Window window = getWindow();

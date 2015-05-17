@@ -1,4 +1,4 @@
-package com.example.blockphone;
+package activities;
 
 import android.app.AlertDialog;
 import android.content.Context;

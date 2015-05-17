@@ -1,7 +1,12 @@
-package com.example.blockphone;
+package activities;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+
+import com.example.blockphone.AppActivity;
+import com.example.blockphone.R;
+import com.example.blockphone.SlidingTabLayout;
+import com.example.blockphone.TabViewPagerAdapter;
 
 /**
  * Created by Жамбыл on 27.03.2015.
@@ -23,7 +28,6 @@ public class Top  extends AppActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top);
-
         startUI();
         startLocalUI();
     }

@@ -1,4 +1,4 @@
-package com.example.blockphone;
+package activities;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
@@ -16,8 +16,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.blockphone.LockScreenService;
+import com.example.blockphone.ProgressWheel;
+import com.example.blockphone.R;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -143,20 +147,10 @@ public class LockScreenActivity extends Activity {
         getWindow().setAttributes(params);
         wm.addView(mTopView, params);
 
-        /*
-            0 - Progress Wheel
-            1 - Round Text View
-            2 - Upper TextView
-            3 - Downer TextView  - TimeLeft
-            4 - dayOfTheWeek
-            5 - dayOfTheMonth
-         */
-
-
 
         //background color or drawable
         WallpaperManager myWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        RelativeLayout parentLayout = (RelativeLayout) mTopView.getChildAt(3).getParent();
+        LinearLayout parentLayout = (LinearLayout) mTopView.findViewById(R.id.dayOfTheMonth).getParent();
         Drawable myDrawable = myWallpaperManager.getDrawable();
         myDrawable.setAlpha(100);
         //parentLayout.setBackground(myDrawable);
@@ -164,32 +158,32 @@ public class LockScreenActivity extends Activity {
 
 
         //nav bar color
-        /*Window window = getWindow();
+       /* Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));*/
         //window.setStatusBarColor(Color.BLACK);
 
-        dayOfTheMonth =  (TextView) mTopView.getChildAt(5);
+        dayOfTheMonth =  (TextView) mTopView.findViewById(R.id.dayOfTheMonth);
         dayOfTheMonth.setText(day);
         dayOfTheMonth.setTextColor(Color.WHITE);
 
-        dayOfTheWeek =  (TextView) mTopView.getChildAt(4);
+        dayOfTheWeek =  (TextView) mTopView.findViewById(R.id.dayOfTheWeek);
         dayOfTheWeek.setText(dayOfTheMonthCal + " "+ month);
         dayOfTheWeek.setTextColor(Color.WHITE);
 
-        TimeLeft = (TextView) mTopView.getChildAt(3);
+        TimeLeft = (TextView) mTopView.findViewById(R.id.TimeLeft);
         TimeLeft.setTextColor(Color.WHITE);
 
-        CurrentTime = (TextView) mTopView.getChildAt(2);
+        CurrentTime = (TextView) mTopView.findViewById(R.id.CurrentTime);
         CurrentTime.setTextColor(Color.WHITE);
 
-        Unlock = (TextView) mTopView.getChildAt(1);
+        Unlock = (TextView) mTopView.findViewById(R.id.Unlock);
         Unlock.setText("Разблокировать");
 
-        pw = (ProgressWheel) mTopView.getChildAt(0);
+        pw = (ProgressWheel) mTopView.findViewById(R.id.pw_spinner);
 
-        //try to set color to rim
+        //todo try to set color to rim
         int myColor = getResources().getColor(R.color.ColorPrimary);
         pw.setContourColor(Color.TRANSPARENT);
         pw.setRimColor(Color.TRANSPARENT); //change
@@ -227,10 +221,12 @@ public class LockScreenActivity extends Activity {
                     // DOWN
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
+                        isCanBeUnlocked = true;
                         Thread thread1 = new Thread() {
                             public void run() {
                                 progress = 0;
                                 while (progress < 361) {
+                                    if(!isAlive()){Log.e("","DEAD");}
                                     if(!isCanBeUnlocked) break;
                                     pw.incrementProgress();
                                     progress++;
@@ -248,7 +244,7 @@ public class LockScreenActivity extends Activity {
                             public void run() {
                                 while(!isUnlocked[0]) {
                                     if ((System.currentTimeMillis() - then) > longClickDuration) {
-                                        if(isCanBeUnlocked){
+                                       if(isCanBeUnlocked){
                                             Unlock();
                                         }
                                         isUnlocked[0] = true;
@@ -297,7 +293,7 @@ public class LockScreenActivity extends Activity {
     }
     private void Unlock(){
 
-        if(mTopView!=null && wm!=null && mTopView.isShown()) {
+        if(mTopView!=null && wm!=null && mTopView.isShown() ) {
             wm.removeView(mTopView);
         }
 

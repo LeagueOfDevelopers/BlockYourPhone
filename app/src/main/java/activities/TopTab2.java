@@ -1,4 +1,4 @@
-package com.example.blockphone;
+package activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;

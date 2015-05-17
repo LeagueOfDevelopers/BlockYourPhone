@@ -5,6 +5,7 @@ package com.example.blockphone;
  */
 
 public interface LocalUI {
+    void startUI();
     void startLocalUI();
 
     //void startLocalUI(View v);

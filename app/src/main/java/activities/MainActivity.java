@@ -1,11 +1,10 @@
-package com.example.blockphone;
+package activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
@@ -17,6 +16,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.example.blockphone.LocalUI;
+import com.example.blockphone.R;
+import com.example.blockphone.SlidingTabLayout;
+import com.example.blockphone.TabViewPagerAdapter;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
@@ -131,6 +134,11 @@ public class MainActivity  extends ActionBarActivity implements LocalUI {
     };
     private void startApp() {
         startActivity(new Intent(this, App.class));
+    }
+
+    @Override
+    public void startUI() {
+
     }
 
     @Override

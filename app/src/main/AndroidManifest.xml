@@ -26,7 +26,7 @@
     <service android:name=".LockScreenService" >
         </service>
         <activity
-            android:name=".MainActivity"
+            android:name="activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
 
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LockScreenActivity"
+        <activity android:name="activities.LockScreenActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             android:theme="@style/MyAwesomeTheme"
@@ -56,13 +56,13 @@
         </receiver>
 
 
-        <activity android:name=".App"
+        <activity android:name="activities.App"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".Top"
+        <activity android:name="activities.Top"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
