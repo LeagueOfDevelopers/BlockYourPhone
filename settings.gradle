@@ -1,2 +1,4 @@
-include ':app', 'vksdk_library'
+include ':app', 'vksdk_library', ':view_pager'
+
+
 

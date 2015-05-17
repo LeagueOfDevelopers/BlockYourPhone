@@ -17,7 +17,6 @@ import java.net.URL;
  * Created by Жамбыл on 08.04.2015.
  */
 public final class Internet {
-
     public static boolean isNetworkConnection(Context c) { //Todo upgrade
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -49,7 +48,9 @@ public final class Internet {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
         assert url != null;
+
         try {
             image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
         } catch (IOException e) {

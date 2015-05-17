@@ -6,6 +6,8 @@
     android:background="#ffffff"
     android:orientation="horizontal"
     android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     android:weightSum="1">
 
     <LinearLayout

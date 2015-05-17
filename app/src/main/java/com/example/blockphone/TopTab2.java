@@ -6,13 +6,16 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.example.blockphone.R;
+import com.example.blockphone.TopTab;
+import com.example.blockphone.Vk_row_adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * Created by Жамбыл on 29.03.2015.
  */
-public final class Top_Tab2 extends Top_Tab {
+public final class TopTab2 extends TopTab {
     Typeface type_thin;
     ListView VkRowListView2;
 
@@ -47,14 +50,14 @@ public final class Top_Tab2 extends Top_Tab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.top_tab_2,container,false);
         _v = v;
-        StartUI(v);
+        startLocalUI(v);
 
         Thread thread = new Thread() {
             public void run() {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        LoadFriends(getActivity());
+                        loadFriends(getActivity());
                         PackAndSendData(_v);
                     }
                 });
@@ -66,17 +69,17 @@ public final class Top_Tab2 extends Top_Tab {
     }
     final Runnable r = new Runnable() {
         public void run() {
-            LoadFriends(getActivity());
+            loadFriends(getActivity());
             PackAndSendData(_v);
         }
     };
 
-    void StartUI(View v)
+    protected void startLocalUI(View v)
     {
         type_thin= Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
     }
     //TODO динамическая загрузка
-    void PackAndSendData(View v)
+    protected void PackAndSendData(View v)
     {
         for(int i=0;i< FriendNames.size(); i++) {
             m = new HashMap<String, Object>();
@@ -93,7 +96,7 @@ public final class Top_Tab2 extends Top_Tab {
         VkRowListView2.setAdapter(sAdapter2);
     }
 
-    public void LoadFriends(Context context){
+    protected void loadFriends(Context context){
         //TODO Progress dialog
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

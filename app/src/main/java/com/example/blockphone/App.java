@@ -1,36 +1,24 @@
 package com.example.blockphone;
 
 import android.app.AlertDialog;
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKUIHelper;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -45,21 +33,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import db.DB_read_all;
-import db.VK_Friends;
 
 /**
  * Created by Жамбыл on 26.03.2015.
  */
-public class App  extends AppActivity {
+
+public class App  extends AppActivity  {
     //Главная
-    String TITLES[] = {"Блокировка","Рейтинг","Выход"};
+
+    //
 
     Button MainBlockButton;
-    TextView Text1,Text2;
+    TextView BlockTime, UnlockTime;
     static String  dropdown1value, dropdown2value;
     String[] Seconds = new String[] {"1 секунда","2 секунды","3 секунды","4 секунды"};
     String[] Hours = new String[] {"1 час","2 часа","3 часа","4 часа"};
     Spinner dropdown1, dropdown2;
+
+    /*
+        Constructor
+     */
+    public App(){
+        super(R.id.tool_bar, "Блокировка", R.id.RecyclerView, R.id.DrawerLayoutMain, R.id.layoutFromRecycler, 1);
+    }
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -69,37 +66,23 @@ public class App  extends AppActivity {
         setContentView(R.layout.main_app);
         LockScreenService.isMustBeLocked = false;
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
-             window.setStatusBarColor(Color.BLACK);
-        }
-
-        km = ((KeyguardManager)getSystemService(KEYGUARD_SERVICE));
-        kl = km.newKeyguardLock(getPackageName());
-
         if(!Internet.isNetworkConnection(App.this)){
             Log.e("App","Restoring Acc data");
             Account.restore(App.this, false);
         }
         else
-            //Account.restore(App.this,true);
+            Account.restore(App.this, true);
             getUserData();
-
         startUI();
+        startLocalUI();
 
     }
 
-    private void startUI(){
-        type = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
-        type_thin = Typeface.createFromAsset(App.this.getAssets(), "fonts/Roboto-Thin.ttf");
+    public void startLocalUI(){
 
+        //region dropdown1
         dropdown1 = (Spinner)findViewById(R.id.dropdown1);
-        dropdown2 = (Spinner)findViewById(R.id.dropdown2);
         dropdown1.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
-        dropdown2.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
 
         dropdown1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -122,6 +105,16 @@ public class App  extends AppActivity {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Hours);
+        dropdown1.setAdapter(adapter1);
+
+        //endregion
+
+        //region dropdown2
+        dropdown2 = (Spinner)findViewById(R.id.dropdown2);
+        dropdown2.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
+
         dropdown2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -132,55 +125,27 @@ public class App  extends AppActivity {
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
                     ((TextView) parent.getChildAt(0)).setTextSize(20);
                     ((TextView) parent.getChildAt(0)).setGravity(Gravity.CENTER);
-                }catch (Exception e){
-                    Log.e("App","dropdown2 error ");
+                } catch (Exception e) {
+                    Log.e("App", "dropdown2 error ");
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
 
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Hours);
-        dropdown1.setAdapter(adapter1);
-
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Seconds);
         dropdown2.setAdapter(adapter2);
-
-        Text1 = (TextView)findViewById(R.id.Text1);
-        Text2 = (TextView)findViewById(R.id.Text2);
+        //endregion
 
 
-        Text1.setTypeface(type_thin);
-        Text2.setTypeface(type_thin);
+        BlockTime = (TextView)findViewById(R.id.Text1);
+        BlockTime.setTypeface(type_thin);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Блокировка");
+        UnlockTime = (TextView)findViewById(R.id.Text2);
+        UnlockTime.setTypeface(type_thin);
 
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
-        mRecyclerView.setHasFixedSize(true);
-
-        mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,App.this);
-        mRecyclerView.setAdapter(mAdapter);
-
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutMain);
-
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
-            @Override
-            public void onDrawerOpened(View drawerView) {super.onDrawerOpened(drawerView);}
-            @Override
-            public void onDrawerClosed(View drawerView) {super.onDrawerClosed(drawerView);}
-        };
-        Drawer.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-
-
-        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
 
         MainBlockButton= (Button)findViewById(R.id.MainBlockButton);
         MainBlockButton.setBackgroundColor(App.this.getResources().getColor(R.color.ColorPrimaryDark));
@@ -190,54 +155,9 @@ public class App  extends AppActivity {
         //MainBlockButton.setTypeface(type);
         MainBlockButton.setOnClickListener(onMainBlockButtonClickListener);
 
-        //Toast.makeText(this, String.valueOf(Account.user_id), Toast.LENGTH_LONG).show();
-        final GestureDetector mGestureDetector =
-                new GestureDetector(App.this,  new GestureDetector.SimpleOnGestureListener() {
-                    @Override public boolean onSingleTapUp(MotionEvent e) {
-                        return true;
-                    }
-                });
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-                View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
-                if(child!=null && mGestureDetector.onTouchEvent(motionEvent)){
-                    Intent intent = new Intent();
-                    Drawer.closeDrawers();
-                    switch(recyclerView.getChildPosition(child))
-                    {
-                        case 1:
-                            break;
-                        case 2:
-                            startActivity(new Intent(App.this, Top.class));
-                            break;
-                        case 3:
-                            new AlertDialog.Builder(App.this)
-                                    .setTitle("Выход")
-                                    .setMessage("Вы уверены, что хотите выйти из аккаунта?")
-                                    .setNegativeButton(android.R.string.no, null)
-                                    .setPositiveButton("Да",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface arg0, int arg1) {
-                                                    VKSdk.logout();
-                                                    VK_Friends.wipeFriendsData(App.this);
-                                                    startActivity(new Intent(App.this, MainActivity.class));
-                                                    Log.i("App", "Logining out");
-                                                    finish();
-                                                }
-                                            }).create().show();
-                            break;
-                    }
-                    return true;
-                }
-                return false;
-            }
-            @Override
-            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
 
-            }
-        });
     }
+
     private View.OnClickListener onMainBlockButtonClickListener = new View.OnClickListener()
     {
         @Override
@@ -245,6 +165,7 @@ public class App  extends AppActivity {
            //THE MAIN FUNCTIONALITY
            Lock();
         }};
+
     private void Lock(){
         kl.disableKeyguard();
         startService(new Intent(this, LockScreenService.class));
@@ -285,32 +206,39 @@ public class App  extends AppActivity {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
+                String encodedPhoto = null;
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = prefs.edit();
+
                 VKList<VKApiUser> MainUser = (VKList<VKApiUser>) response.parsedModel;
                 Log.e("App", "Getting user data");
                 String photoUrl = MainUser.get(0).photo_100;
                 if (photoUrl != null) {
                     Bitmap photoBm = null;
                     String previousUrl = null;
-                    if (Account.getPhotoUrl() != null)
-                        previousUrl = Account.getPhotoUrl();
+                    if (Account.getPhotoUrl(App.this) != null)
+                        previousUrl = Account.getPhotoUrl(App.this);
                     if (!photoUrl.equals(previousUrl)) {
                         try {
                             photoBm = Internet.convertUrlToImage(photoUrl);
-                        } catch (Exception e) {
-                            Logger logger = Logger.getAnonymousLogger();
-                            logger.log(Level.SEVERE, "an exception was thrown while converting", e);
-                        }
-                    }
+
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (photoBm != null)
                         photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte[] b = baos.toByteArray();
-                    String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
+                    encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
                     if (!encodedPhoto.equals(null)) {
                         Log.i("App", "getting user data SUCCESS");
                         setLocalData();
                     }
+                        } catch (Exception e) {
+                            Logger logger = Logger.getAnonymousLogger();
+                            logger.log(Level.SEVERE, "an exception was thrown while converting", e);
+                        }
+                    }
+                    //else Log.e("App","same");
 
                     Account.setAccountData(App.this, MainUser.get(0).first_name, MainUser.get(0).last_name,
                             String.valueOf(MainUser.get(0).id),
@@ -319,7 +247,7 @@ public class App  extends AppActivity {
                 setLocalData();
 
                 //getting data from db
-                new DB_read_all(App.this).execute();
+                new DB_read_all(App.this).start();
 
             }
         });}

@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'maven'
+
 
 android {
     compileSdkVersion 22
@@ -12,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -21,10 +24,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:support-v4:22.1.1'
     compile project(':vksdk_library')
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.android.support:recyclerview-v7:21.0.+'
-    //compile 'com.github.Todd-Davies:ProgressWheel:1.0'
+    //compile project(':view_pager')
+    //compile 'com.viewpagerindicator:library:2.4.1@aar'
 }

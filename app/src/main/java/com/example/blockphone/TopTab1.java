@@ -19,6 +19,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.blockphone.Account;
+import com.example.blockphone.R;
+import com.example.blockphone.TopTab;
+import com.example.blockphone.Vk_row_adapter;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKParameters;
@@ -35,7 +39,8 @@ import java.util.Map;
 /**
  * Created by Жамбыл on 29.03.2015.
  */
-public final class Top_Tab1 extends Top_Tab {
+public final class TopTab1 extends TopTab {
+
     ListView VkRowListView1;
     Button PostToWallButton;
     TextView NoFriendsText;
@@ -64,17 +69,17 @@ public final class Top_Tab1 extends Top_Tab {
         Thread thread1 = new Thread() {
             @Override
             public void run() {
-                LoadFriends(getActivity());
+                loadFriends(getActivity());
             }
         };
 
         thread1.start();
 
-        StartUI(v);
+        startLocalUI(v);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         if(prefs.getBoolean("hasFriends",false)){
-            data  = new ArrayList<Map<String, Object>>(FriendNames.size());
+            data  = new ArrayList<>(FriendNames.size());
             Thread thread = new Thread() {
                 public void run() {
                     try {
@@ -98,11 +103,10 @@ public final class Top_Tab1 extends Top_Tab {
         }
         return v;
     }
-    void PackAndSendData(View v)
+    protected void PackAndSendData(View v)
     {
-        Log.e("Top_Tab1", "Packing Data");
         for(int i=0;i<FriendNames.size(); i++) {
-            m = new HashMap<String, Object>();
+            m = new HashMap<>();
             m.put(ATTRIBUTE_NAME_TEXT_NAME, FriendNames.get(i));
             m.put(ATTRIBUTE_NAME_TEXT_PLACE,PointsList.get(i));
             m.put(ATTRIBUTE_NAME_IMAGE, PhotoAsBytesList.get(i));
@@ -115,7 +119,7 @@ public final class Top_Tab1 extends Top_Tab {
         VkRowListView1.setAdapter(sAdapter1);
     }
 
-    void LoadFriends(Context context){
+    protected void loadFriends(Context context){
         //TODO Progress dialog
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -126,9 +130,7 @@ public final class Top_Tab1 extends Top_Tab {
                     FriendNames.add(prefs.getString("FriendFirstName" + String.valueOf(i), null) +
                             " " + prefs.getString("FriendLastName" + String.valueOf(i), null));
                     PointsList.add(prefs.getString("FriendPoints" + String.valueOf(i), null));
-                    //Log.e("encoded photo ",  prefs.getString("FriendPhoto" + String.valueOf(i), null));
                     String PhotoEncoded = prefs.getString("FriendPhoto" + String.valueOf(i), null);
-                    //Log.e("Tob_tab1",PhotoEncoded);
                     byte[] b = PhotoEncoded.getBytes();
                     byte[] PhotoAsBytes = Base64.decode(b, Base64.DEFAULT);
                     PhotoAsBytesList.add(PhotoAsBytes);
@@ -136,9 +138,8 @@ public final class Top_Tab1 extends Top_Tab {
             }
         }
         isReady = true;
-        Log.e("Top_Tab1","Loading Friends");
     }
-    void StartUI(View v)
+    public void startLocalUI(View v)
     {
         type_thin = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Thin.ttf");
 

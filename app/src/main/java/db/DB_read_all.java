@@ -34,9 +34,8 @@ import java.util.logging.Logger;
 /**
  * Created by Жамбыл on 18.04.2015.
  */
-public final class DB_read_all  extends AsyncTask<String, String, String> {
+public final class DB_read_all  extends Thread {
     Context context;
-    private static String url_read_all = "http://women.egeshki.ru/blockphonedb/read_all.php";
 
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_USERS = "users";
@@ -61,6 +60,10 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
     boolean isReady = false;
 
     String photo_url;
+    String  previous_photo_url;
+    String encodedPhoto;
+
+
 
     JSONParser jParser = new JSONParser();
 
@@ -78,14 +81,14 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
     public DB_read_all(Context _context){
         context = _context;
     }
-    @Override
-    protected String doInBackground(String... strings) {
+    public void run() {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         // getting JSON string from URL
+        String url_read_all = "http://women.egeshki.ru/blockphonedb/read_all.php";
         JSONObject json = jParser.makeHttpRequest(url_read_all, "GET", params);
 
-        // Check your log cat for JSON reponse
+        // Check your log cat for JSON response
         if(json!=null){
             try {
                 // Checking for SUCCESS TAG
@@ -102,13 +105,13 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
 
                         JSONObject c = users.getJSONObject(i);
                         id = c.getString(TAG_ID);
-                        first_name = c.getString(TAG_FIRST_NAME); //
+                        first_name = c.getString(TAG_FIRST_NAME);
                         String s = new String(first_name.getBytes("ISO-8859-1"), "Windows-1251");
                         first_name = new String(("\uFEFF" + s).getBytes("UTF-8"));
                         ListOfFName.add(first_name);
                         Log.i("DB_read_all",first_name);
 
-                        last_name = c.getString(TAG_LAST_NAME);   //
+                        last_name = c.getString(TAG_LAST_NAME);
                         String l = new String(last_name.getBytes("ISO-8859-1"), "Windows-1251");
                         last_name = new String(("\uFEFF" + l).getBytes("UTF-8"));
                         ListOfLName.add(last_name);
@@ -148,21 +151,23 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
         new DB_create(context, Account.getFirstName(), Account.getLastName(),
                 Account.getVkId()).execute();
 
-        new VK_Friends(context).execute();
+        new VK_Friends(context).start();
 
         for(int i = 0; i<ListOfFName.size();i++){
+            Log.i("", String.valueOf(i));
             setUserPhotoUrl(ListOfFName.get(i), ListOfLName.get(i), ListOfVkId.get(i), ListOfPoints.get(i));
+
             while (!isReady)
+            //todo sync
                 try {
-                    Thread.sleep(100);
-                    //todo change
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             isReady = false;
         }
+        Log.e("","Finish");
 
-        return null;
     }
     private void setUserPhotoUrl(final String _first_name,
                                  final String _last_name,final String _vk_id,final String _points){
@@ -173,38 +178,46 @@ public final class DB_read_all  extends AsyncTask<String, String, String> {
             @Override
             public void onComplete(final VKResponse response) {
                 super.onComplete(response);
-                VKList<VKApiUser> User = (VKList<VKApiUser>) response.parsedModel;
-                if(User.get(0).photo_100!=null)
-                    photo_url = User.get(0).photo_100;
-
-                Bitmap photoBm = null;
-
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = prefs.edit();
-                if(photo_url != null){
+
+                VKList<VKApiUser> User = (VKList<VKApiUser>) response.parsedModel;
+
+                Log.i("Photo  All",_first_name);
+
+                boolean theSamePhoto = false;
+                photo_url = User.get(0).photo_100;
+                previous_photo_url = prefs.getString("UserPhotoUrl" + String.valueOf(I),null);
+                Bitmap photoBm = null;
+
+
+                if(!photo_url.equals(previous_photo_url)) {
                     try {
                         photoBm = Internet.convertUrlToImage(photo_url);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         Logger logger = Logger.getAnonymousLogger();
                         logger.log(Level.SEVERE, "an exception was thrown while converting", e);
                     }
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    if (photoBm != null)
+                        photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+
+                    byte[] b = baos.toByteArray();
+                    encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
                 }
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                if(photoBm!= null)
-                    photoBm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-
-                byte[] b = baos.toByteArray();
-                String encodedPhoto = Base64.encodeToString(b, Base64.DEFAULT);
-
+                else {
+                    theSamePhoto = true;
+                    //Log.e("DB_get_all","same");
+                }
                 editor.putString("UserFirstName" + String.valueOf(I), _first_name);
                 editor.putString("UserLastName" + String.valueOf(I), _last_name);
                 editor.putString("UserVkId" + String.valueOf(I), _vk_id);
                 editor.putString("UserPoints" + String.valueOf(I), _points);
-                editor.putString("UserPhoto" + String.valueOf(I), encodedPhoto);
+                if(!theSamePhoto) editor.putString("UserPhoto" + String.valueOf(I), encodedPhoto);
+                editor.putString("UserPhotoUrl" + String.valueOf(I), photo_url);
                 editor.apply();
-                Log.i("Photo  All",_first_name);
+
                 if(I == users.length() - 1){
                     Log.i("DB_read_all","Success");
                 }

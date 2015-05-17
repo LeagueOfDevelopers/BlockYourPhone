@@ -2,12 +2,20 @@ package com.example.blockphone;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKScope;
@@ -18,14 +26,20 @@ import com.vk.sdk.api.VKError;
 import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 
-public class MainActivity  extends FragmentActivity {
+public class MainActivity  extends ActionBarActivity implements LocalUI {
 
     /**
      * Scope is set of required permissions for your application
      * @see <a href="https://vk.com/dev/permissions">vk.com api permissions documentation</a>
      */
-    final String bd_name = "mcvlad";
-    final String bd_password = "qwerty123";
+    int NumbOfTabs = 2;
+    ViewPager pager;
+    TabViewPagerAdapter adapter;
+    SlidingTabLayout tabs;
+    CharSequence Titles[]={"asd","Все"};
+    TextView[] dots;
+    int dotsCount;
+
 
     private static final String[] sMyScope = new String[] {
             VKScope.FRIENDS,
@@ -37,16 +51,15 @@ public class MainActivity  extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.vk_auth);
+        setContentView(R.layout.presentation);
         VKUIHelper.onCreate(this);
         VKSdk.initialize(sdkListener, MainActivity.this.getResources().getString(R.string.API_ID));
         if (VKSdk.wakeUpSession()) {
             Log.i("Login", "Starting app");
             startApp();
             finish();
-            return;
         }
-
+        startLocalUI();
         //String[] fingerprint = VKUtil.getCertificateFingerprint(this, this.getPackageName());
         //Log.d("Fingerprint", fingerprint[0]);
     }
@@ -71,7 +84,9 @@ public class MainActivity  extends FragmentActivity {
             startApp();
             //showLogout();
         } else {
-            showLogin(); //TODO ERROR когда включаешь интрентер в мэйн активити
+            //startActivity(new Intent(this, PresentationActivity.class));
+            //finish();
+            //showLogin(); //TODO ERROR когда включаешь интрентер в мэйн активити
         }
     }
 
@@ -116,6 +131,58 @@ public class MainActivity  extends FragmentActivity {
     };
     private void startApp() {
         startActivity(new Intent(this, App.class));
+    }
+
+    @Override
+    public void startLocalUI() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
+            window.setStatusBarColor(Color.BLACK);
+        }
+
+        adapter =  new TabViewPagerAdapter(getSupportFragmentManager(),Titles, NumbOfTabs,2);
+        pager = (ViewPager) findViewById(R.id.pager1);
+        pager.setAdapter(adapter);
+
+        dotsCount = adapter.getCount();
+        dots = new TextView[dotsCount];
+        dots[0] = (TextView)findViewById(R.id.dot1);
+        dots[1] = (TextView)findViewById(R.id.dot2);
+
+        for(int i = 0; i< dotsCount;i++) {
+            dots[i].setText(Html.fromHtml("&#8226;"));
+            dots[i].setTextSize(30);
+            dots[i].setTextColor(getResources().getColor(android.R.color.darker_gray));
+        }
+
+        dots[0].setTextColor(getResources().getColor(R.color.ColorPrimary));
+
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                //setDot(position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setDot(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // setDot(position);
+            }
+        });
+    }
+    void setDot(int position) {
+        for (int i = 0; i < dotsCount; i++) {
+            dots[i].setTextColor(getResources().getColor(android.R.color.darker_gray));
+        }
+        dots[position].setTextColor(getResources().getColor(R.color.ColorPrimary));
     }
 
     public static class LoginFragment extends android.support.v4.app.Fragment {

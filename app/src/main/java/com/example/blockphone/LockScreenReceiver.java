@@ -30,6 +30,9 @@ public class LockScreenReceiver extends BroadcastReceiver  {
                    throwable.printStackTrace();
                }
            }
+           else if(intent.getAction().equals(Intent.ACTION_ALL_APPS)){
+               Log.e("","asdasdsasad");
+           }
 
 
             //wasScreenOn=true;

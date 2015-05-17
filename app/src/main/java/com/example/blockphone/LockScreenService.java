@@ -6,8 +6,16 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+
+import javax.xml.transform.Result;
 
 public class LockScreenService extends Service{
     BroadcastReceiver mReceiver;
@@ -35,6 +43,7 @@ public class LockScreenService extends Service{
 
         }
         else{
+
             Log.e("LockScreenService","TEST");
         }
 

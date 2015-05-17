@@ -16,6 +16,7 @@ public class Account {
     private static String LastName;
     private static String VkId;
     private static byte[] PhotoAsBytes;
+    private static String PhotoAsString;
     private static String PhotoUrl;
     private static int Points = -1;
 
@@ -26,6 +27,7 @@ public class Account {
         LastName = _lm;
         VkId = _vi;
         PhotoUrl = _pu;
+        PhotoAsString = enc;
 
         if (enc != null) {
             byte[] b = enc.getBytes();
@@ -82,15 +84,16 @@ public class Account {
     public static String getFullName() {
         return FirstName + " " + LastName;
     }
-
-
     public static int getPoints() {
         return Points;
     }
-
     public static byte[] getPhotoAsBytes() {
         return PhotoAsBytes;
     }
+    public static String getPhotoAsString() {
+        return PhotoAsString;
+    }
+
 
     public static void setPoints(Context context, int p,boolean needToBeUpdate) {
         if(p>=0)

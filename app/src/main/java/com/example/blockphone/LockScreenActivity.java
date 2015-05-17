@@ -38,7 +38,6 @@ public class LockScreenActivity extends Activity {
     ViewGroup mTopView;
     WindowManager.LayoutParams params;
     boolean isCanBeUnlocked = false;
-    Thread spinningThread;
     String day,month;
 
 
@@ -225,10 +224,8 @@ public class LockScreenActivity extends Activity {
                     else
                         Unlock.setText("Удерживайте " + String.valueOf(longClickDuration/1000) + " секунды");
 
-                    //DOWN
+                    // DOWN
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-                        isCanBeUnlocked = true;
 
                         Thread thread1 = new Thread() {
                             public void run() {
@@ -243,11 +240,10 @@ public class LockScreenActivity extends Activity {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                        }}};
+                                }}};
                         thread1.start();
 
                         then = System.currentTimeMillis();
-
                         Thread thread = new Thread() {
                             public void run() {
                                 while(!isUnlocked[0]) {
@@ -258,7 +254,7 @@ public class LockScreenActivity extends Activity {
                                         isUnlocked[0] = true;
                                     }
                                     try {
-                                        Thread.sleep(50);
+                                        sleep(50);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
@@ -267,8 +263,7 @@ public class LockScreenActivity extends Activity {
                         };
                         thread.start();
 
-
-                    //UP
+                    // UP
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         pw.stopSpinning();
                         isCanBeUnlocked = false;
@@ -301,16 +296,18 @@ public class LockScreenActivity extends Activity {
         });
     }
     private void Unlock(){
-        if(mTopView!=null && wm!=null & mTopView.isShown()) {
+
+        if(mTopView!=null && wm!=null && mTopView.isShown()) {
             wm.removeView(mTopView);
         }
+
         Log.e("","Lock Screen OFF");
         App.reenable();
         LockScreenService.isMustBeLocked = false;
         finish();
     }
 
-    public void setLeftTime(){
+    public void setLeftTime() {
         runOnUiThread(new Runnable() {
             public void run() {
                 try{

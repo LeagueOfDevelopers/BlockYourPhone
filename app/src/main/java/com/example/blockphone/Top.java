@@ -1,40 +1,23 @@
 package com.example.blockphone;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-
-import com.vk.sdk.VKSdk;
-
-import db.VK_Friends;
 
 /**
  * Created by Жамбыл on 27.03.2015.
  */
 public class Top  extends AppActivity {
 
-    String TITLES[] = {"Блокировка","Рейтинг","Выход"};
-
     int NumbOfTabs = 2;
     ViewPager pager;
-    Top_ViewPagerAdapter adapter;
+    TabViewPagerAdapter adapter;
     SlidingTabLayout tabs;
     CharSequence Titles[]={"Друзья","Все"};
+
+
+    public Top(){
+        super(R.id.tool_bar_2, "Рейтинг", R.id.RecyclerView, R.id.DrawerLayoutTop, R.id.layoutFromRecycler, 2);
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -42,27 +25,11 @@ public class Top  extends AppActivity {
         setContentView(R.layout.top);
 
         startUI();
+        startLocalUI();
     }
-    private void startUI()
+    public void startLocalUI()
     {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));
-            window.setStatusBarColor(Color.BLACK);
-        }
-        toolbar = (Toolbar) findViewById(R.id.tool_bar_2);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Рейтинг");
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
-        mRecyclerView.setHasFixedSize(true);
-
-        mAdapter = new DrawableAdapter(TITLES,ICONS,NAME,POINTS,PROFILE_PHOTO,Top.this);
-
-        adapter =  new Top_ViewPagerAdapter(getSupportFragmentManager(),Titles, NumbOfTabs);
+        adapter =  new TabViewPagerAdapter(getSupportFragmentManager(),Titles, NumbOfTabs,1);
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
@@ -70,11 +37,6 @@ public class Top  extends AppActivity {
         tabs.setDistributeEvenly(true);
         tabs.setViewPager(pager);
 
-        mRecyclerView.setAdapter(mAdapter);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayoutTop);
-        layoutFromRecycler = (LinearLayout)findViewById(R.id.layoutFromRecycler);
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -83,70 +45,8 @@ public class Top  extends AppActivity {
             }
         });
 
-        // Setting the ViewPager For the SlidingTabsLayout
-
-        final GestureDetector mGestureDetector = new GestureDetector
-                (Top.this, new GestureDetector.SimpleOnGestureListener() {
-                    @Override public boolean onSingleTapUp(MotionEvent e) {
-                        return true;
-                    }
-
-                });
 
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-                View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
-
-                if(child!=null && mGestureDetector.onTouchEvent(motionEvent)){
-                    Intent intent = new Intent();
-                    Drawer.closeDrawers();
-                    switch(recyclerView.getChildPosition(child))
-                    {
-                        case 1:
-                            finish();
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            new AlertDialog.Builder(Top.this)
-                                    .setTitle("Выход")
-                                    .setMessage("Вы уверены, что хотите выйти из аккаунта?")
-                                    .setNegativeButton(android.R.string.no, null)
-                                    .setPositiveButton("Да",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface arg0, int arg1) {
-                                                    VKSdk.logout();
-                                                    VK_Friends.wipeFriendsData(Top.this);
-                                                    startActivity(new Intent(Top.this, MainActivity.class));
-                                                    finish();
-                                                }
-                                            }).create().show();
-                            break;
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-            }
-        });
-
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
-        Drawer.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
 
     }
 

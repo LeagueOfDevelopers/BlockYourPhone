@@ -8,15 +8,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class Top_ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
 
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
-
+    int type;
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public Top_ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int mNumbOfTabsumb) {
+    public TabViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int mNumbOfTabsumb,int type) {
         super(fm);
-
+        this.type = type;
         this.Titles = mTitles;
         this.NumbOfTabs = mNumbOfTabsumb;
     }
@@ -25,19 +25,26 @@ public class Top_ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if(position == 0) // if the position is 0 we are returning the First tab
-        {
-            Top_Tab1 tab1 = new Top_Tab1();
-            return tab1;
+        switch (type){
+            case 1:
+                switch (position) {
+                    case 0:
+                        return new TopTab1();
+                    case 1:
+                        return new TopTab2();
+                }
+            case 2:
+                switch (position) {
+                    case 0:
+                        return new PresTab1();
+                    case 1:
+                        return new PresTab2();
+                }
+
+
         }
-        if(position == 1)             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
-        {
-            Top_Tab2 tab2 = new Top_Tab2();
-            return tab2;
-        }
-        else {
-            return new Fragment();
-        }
+
+        return new Fragment();
     }
 
     // This method return the titles for the Tabs in the Tab Strip
