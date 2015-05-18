@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.graphics.ColorUtils;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.blockphone.LockScreenService;
@@ -31,10 +34,13 @@ import java.util.concurrent.TimeUnit;
 
 public class LockScreenActivity extends Activity {
 
-    TextView Unlock, TimeLeft, CurrentTime, dayOfTheMonth, dayOfTheWeek;
+    TextView Unlock, TimeLeft, CurrentTime, dayOfTheMonth, dayOfTheWeek, Minutes, Left;
     private int longClickDuration = 500;
     private int longLockDuration = 0;
     private long then;
+
+    Typeface type_thin;
+    Typeface type;
 
     int progress = 0;
     ProgressWheel pw;
@@ -150,11 +156,11 @@ public class LockScreenActivity extends Activity {
 
         //background color or drawable
         WallpaperManager myWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        LinearLayout parentLayout = (LinearLayout) mTopView.findViewById(R.id.dayOfTheMonth).getParent();
-        Drawable myDrawable = myWallpaperManager.getDrawable();
-        myDrawable.setAlpha(100);
-        //parentLayout.setBackground(myDrawable);
-        parentLayout.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
+        RelativeLayout parentLayout = (RelativeLayout) mTopView.findViewById(R.id.dayOfTheMonth).getParent();
+        Drawable myDrawable = getResources().getDrawable(R.drawable.lock_screen_background);
+        //myDrawable.setAlpha(100);
+       // parentLayout.setBackground(myDrawable);
+        //parentLayout.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
 
 
         //nav bar color
@@ -164,30 +170,52 @@ public class LockScreenActivity extends Activity {
         window.setStatusBarColor(getResources().getColor(R.color.ColorPrimary));*/
         //window.setStatusBarColor(Color.BLACK);
 
+        type = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
+        type_thin = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
+
         dayOfTheMonth =  (TextView) mTopView.findViewById(R.id.dayOfTheMonth);
         dayOfTheMonth.setText(day);
+        dayOfTheMonth.setTypeface(type);
         dayOfTheMonth.setTextColor(Color.WHITE);
 
         dayOfTheWeek =  (TextView) mTopView.findViewById(R.id.dayOfTheWeek);
-        dayOfTheWeek.setText(dayOfTheMonthCal + " "+ month);
+        dayOfTheWeek.setText(dayOfTheMonthCal + " " + month);
+        dayOfTheWeek.setTypeface(type);
         dayOfTheWeek.setTextColor(Color.WHITE);
 
         TimeLeft = (TextView) mTopView.findViewById(R.id.TimeLeft);
-        TimeLeft.setTextColor(Color.WHITE);
+        TimeLeft.setTextColor(getResources().getColor(R.color.ColorPrimary));
+        TimeLeft.setTypeface(type_thin);
+        TimeLeft.setTextSize(100);
 
         CurrentTime = (TextView) mTopView.findViewById(R.id.CurrentTime);
         CurrentTime.setTextColor(Color.WHITE);
+        CurrentTime.setTypeface(type_thin);
+        CurrentTime.setTextSize(140);
 
         Unlock = (TextView) mTopView.findViewById(R.id.Unlock);
         Unlock.setText("Разблокировать");
+        //Unlock.setBackgroundColor(ColorUtils.setAlphaComponent(Color.WHITE, 128));
+        Unlock.setTypeface(type);
+        Unlock.setTextColor(getResources().getColor(R.color.ColorPrimary));
 
         pw = (ProgressWheel) mTopView.findViewById(R.id.pw_spinner);
-
-        //todo try to set color to rim
-        int myColor = getResources().getColor(R.color.ColorPrimary);
         pw.setContourColor(Color.TRANSPARENT);
-        pw.setRimColor(Color.TRANSPARENT); //change
+        pw.setRimColor(ColorUtils.setAlphaComponent(Color.WHITE, 100));
         pw.setBackgroundColor(Color.TRANSPARENT);
+        //pw.setBarColor(Color.WHITE);
+
+        Minutes = (TextView) mTopView.findViewById(R.id.Minutes);
+        Minutes.setText("минут");
+        Minutes.setTypeface(type_thin);
+        Minutes.setTextColor(Color.WHITE);
+        Minutes.setTextSize(40);
+
+        Left = (TextView) mTopView.findViewById(R.id.Left);
+        Left.setText("осталось");
+        Left.setTypeface(type_thin);
+        Left.setTextColor(Color.WHITE);
+        Left.setTextSize(40);
 
 
         //CountDownRunner
@@ -285,17 +313,19 @@ public class LockScreenActivity extends Activity {
                     } else
                         curTime = hours + ":" + minutes;
                     wm.updateViewLayout(mTopView, params);
-                    CurrentTime.setText(curTime);
+                    CurrentTime.setText(" " + curTime);
                 } catch (Exception ignored) {
                 }
             }
         });
     }
     private void Unlock(){
-
-        if(mTopView!=null && wm!=null && mTopView.isShown() ) {
-            wm.removeView(mTopView);
+        try {
+            if (mTopView != null && wm != null && mTopView.isShown()) {
+                wm.removeView(mTopView);
+            }
         }
+        catch (Exception ignored){}
 
         Log.e("","Lock Screen OFF");
         App.reenable();
@@ -318,8 +348,7 @@ public class LockScreenActivity extends Activity {
                                 TimeLeft.setText("" + String.format("%d часов,  %d минут",
                                         hours,minutes)+" осталось");
                             else if(minutes!=0)
-                                TimeLeft.setText("" + String.format("%d минут",
-                                        minutes)+" осталось");
+                                TimeLeft.setText(String.valueOf(minutes));
                             else
                                 TimeLeft.setText("" + String.format("%d секунд",
                                         seconds)+" осталось");
